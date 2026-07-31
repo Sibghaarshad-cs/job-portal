@@ -100,7 +100,11 @@ export default function SignupForm() {
 
     alert("Account created successfully!");
 
-    router.push("/login");
+    if (data.user.role === "EMPLOYER") {
+  router.push("/employer/dashboard");
+} else {
+  router.push("/jobseeker/dashboard");
+}
 
   } catch (error) {
     alert("Something went wrong.");
@@ -363,26 +367,36 @@ Hiring talent
 
           {/* Login */}
 
+                    {/* Login */}
+
           <p className="text-center text-gray-500">
 
             Already have an account?
 
             <span
               onClick={() => router.push("/login")}
-              className="text-violet-600 font-semibold cursor-pointer ml-2"
+              className="text-violet-600 font-semibold cursor-pointer ml-2 hover:underline"
             >
               Sign in
-              <p className="text-center text-sm text-gray-400 mt-8 leading-6">
-By creating an account, you agree to our
-<span className="text-violet-600 cursor-pointer">
-{" "}Terms of Service
-</span>
-{" "}and{" "}
-<span className="text-violet-600 cursor-pointer">
-Privacy Policy
-</span>.
-</p>
             </span>
+
+          </p>
+
+          {/* Terms & Privacy */}
+
+          <p className="text-center text-sm text-gray-400 mt-6 leading-6">
+
+            By creating an account, you agree to our
+
+            <span className="text-violet-600 cursor-pointer hover:underline">
+              {" "}Terms of Service
+            </span>
+
+            {" "}and{" "}
+
+            <span className="text-violet-600 cursor-pointer hover:underline">
+              Privacy Policy
+            </span>.
 
           </p>
 

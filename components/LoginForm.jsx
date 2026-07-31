@@ -74,24 +74,22 @@ export default function LoginForm() {
 
       const data = await response.json();
 
+if (!response.ok) {
+  setErrors({
+    general: data.message,
+  });
 
+  setLoading(false);
+  return;
+}
 
-      if (!response.ok) {
+alert("Login successful!");
 
-        setErrors({
-          general: data.message,
-        });
-
-        setLoading(false);
-        return;
-      }
-
-
-
-      alert("Login successful!");
-
-      router.push("/dashboard");
-
+if (data.user.role === "EMPLOYER") {
+  router.push("/employer/dashboard");
+} else {
+  router.push("/jobseeker/dashboard");
+}
 
 
     } catch (error) {
