@@ -14,7 +14,7 @@ export default function HeroButtons() {
       </Link>
 
       <Link
-        href="/post-job"
+        href="/signup"
         className="flex items-center gap-2 border border-gray-300 px-6 py-3 rounded-xl hover:bg-gray-100 transition"
       >
         <BriefcaseBusiness size={18} />
