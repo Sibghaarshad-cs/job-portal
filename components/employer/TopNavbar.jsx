@@ -1,7 +1,11 @@
 "use client";
+
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function TopNavbar() {
+  const router = useRouter();
+
   return (
     <div className="flex items-center justify-between bg-white px-8 py-5 border-b border-gray-200">
 
@@ -12,12 +16,13 @@ export default function TopNavbar() {
         </h1>
 
         <p className="text-gray-500 mt-1">
-           Here's what's happening today.
+          Here's what's happening today.
         </p>
       </div>
 
       {/* Right Side */}
       <button
+        onClick={() => router.push("/employer/post-job")}
         className="flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white px-5 py-3 rounded-xl font-medium transition"
       >
         <Plus size={20} />

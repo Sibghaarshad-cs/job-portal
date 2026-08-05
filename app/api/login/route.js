@@ -63,20 +63,31 @@ export async function POST(request) {
     }
 
     // Login successful
-    return NextResponse.json(
-      {
-        message: "Login successful",
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        },
-      },
-      {
-        status: 200,
-      }
-    );
+   // Login successful
+
+const response = NextResponse.json(
+  {
+    message: "Login successful",
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
+  },
+  {
+    status: 200,
+  }
+);
+
+// Save logged-in user's ID in a cookie
+response.cookies.set("userId", user.id.toString(), {
+  httpOnly: true,
+  path: "/",
+  maxAge: 60 * 60 * 24 * 7, // 7 days
+});
+
+return response;
 
   } catch (error) {
     console.error(error);

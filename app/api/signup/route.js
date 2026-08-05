@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 
 
 export async function POST(request) {
+  console.log("Signup API was called");
   try {
     const body = await request.json();
 
@@ -18,7 +19,7 @@ export async function POST(request) {
 
 
     // Basic validation
-    if (!name || !email || !password || !role) {
+    if (!name || !email || !password) {
       return NextResponse.json(
         {
           message: "All fields are required",
@@ -91,16 +92,15 @@ export async function POST(request) {
 
 
   } catch (error) {
+  console.error("Signup Error:", error);
 
-    console.log(error);
-
-    return NextResponse.json(
-      {
-        message: "Something went wrong",
-      },
-      {
-        status: 500,
-      }
-    );
-  }
+  return NextResponse.json(
+    {
+      message: error.message,
+    },
+    {
+      status: 500,
+    }
+  );
+}
 }

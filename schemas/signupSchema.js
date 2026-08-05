@@ -17,8 +17,8 @@ export const signupSchema = z
     confirmPassword: z
       .string(),
 
-    role: z
-      .enum(["JOB_SEEKER", "EMPLOYER"]),
+    
+      role: z.enum(["JOB_SEEKER", "EMPLOYER"]).optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",

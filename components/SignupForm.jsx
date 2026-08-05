@@ -18,7 +18,7 @@ export default function SignupForm() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "JOB_SEEKER",
+    role: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -50,7 +50,12 @@ export default function SignupForm() {
  const handleSubmit = async (e) => {
   e.preventDefault();
 
+  alert("Submit clicked");
+
   setLoading(true);
+
+
+
   setErrors({});
 
   const newErrors = {};
@@ -67,13 +72,9 @@ export default function SignupForm() {
     newErrors.password = "Password is required";
   }
 
-  if (!formData.confirmPassword) {
-    newErrors.confirmPassword = "Confirm Password is required";
-  }
+  
 
-  if (formData.password !== formData.confirmPassword) {
-    newErrors.confirmPassword = "Passwords do not match";
-  }
+  
 
   if (Object.keys(newErrors).length > 0) {
     setErrors(newErrors);
@@ -102,10 +103,12 @@ export default function SignupForm() {
 
     if (data.user.role === "EMPLOYER") {
   router.push("/employer/dashboard");
-} else {
+} else if (data.user.role === "JOB_SEEKER") {
   router.push("/jobseeker/dashboard");
+} else {
+  // User didn't choose a role
+  router.push("/jobseeker/dashboard"); // or "/jobseeker/dashboard" if you haven't made it yet
 }
-
   } catch (error) {
     alert("Something went wrong.");
   }
@@ -118,15 +121,15 @@ export default function SignupForm() {
 
       {/* Card */}
 
-      <div className="w-full max-w-2xl bg-white rounded-[28px] shadow-2xl border border-gray-100 px-12 py-10">
+      <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl border border-gray-100 px-6 py-5">
 
         {/* Heading */}
 
-        <h1 className="text-5xl font-bold text-center text-gray-900">
+        <h1 className="text-3xl font-bold text-center text-gray-900">
           Create Your Account
         </h1>
 
-      <p className="text-center text-gray-500 mt-3 text-lg">
+      <p className="text-center text-gray-500mt-2 text-sm">
   Join our community and unlock{" "}
   <span className="text-violet-600 font-semibold">
     amazing opportunities.
@@ -137,12 +140,12 @@ export default function SignupForm() {
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-5 mt-10"
+          className="space-y-4 mt-6"
         >
                   {/* Full Name */}
 
           <div>
-            <label className="block mb-2 text-[15px] font-semibold text-gray-900">
+            <label  className="block text-xs font-semibold mb-1">
               Full Name
             </label>
 
@@ -159,7 +162,7 @@ export default function SignupForm() {
         placeholder="Enter your full name"
         value={formData.name}
         onChange={handleChange}
-        className="w-full h-14 rounded-2xl border border-gray-300 bg-white pl-12 pr-4 text-[15px] placeholder:text-gray-400 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none"
+        className="w-full h-10 rounded-2xl border border-gray-300 bg-white pl-12 pr-4 text-[15px] placeholder:text-gray-400 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none"
     />
 
 </div>
@@ -173,10 +176,9 @@ export default function SignupForm() {
 
           {/* Email */}
 
-         {/* Email */}
-
+        
 <div>
-  <label className="block mb-2 text-[15px] font-semibold text-gray-900">
+  <label  className="block text-xs font-semibold mb-1">
     Email Address *
   </label>
 
@@ -192,7 +194,7 @@ export default function SignupForm() {
       placeholder="Enter your email address"
       value={formData.email}
       onChange={handleChange}
-      className="w-full h-14 rounded-2xl border border-gray-300 bg-white pl-12 pr-4 text-[15px] text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+      className="w-full h-10 rounded-2xl border border-gray-300 bg-white pl-12 pr-4 text-[15px] text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
     />
   </div>
 
@@ -207,7 +209,7 @@ export default function SignupForm() {
 {/* Password */}
 
 <div>
-  <label className="block mb-2 text-[15px] font-semibold text-gray-900">
+  <label  className="block text-xs font-semibold mb-1">
     Password *
   </label>
 
@@ -223,7 +225,7 @@ export default function SignupForm() {
       placeholder="Create a strong password"
       value={formData.password}
       onChange={handleChange}
-      className="w-full h-14 rounded-2xl border border-gray-300 bg-white pl-12 pr-12 text-[15px] text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-all"
+      className="w-full h-10 rounded-2xl border border-gray-300 bg-white pl-12 pr-12 text-[15px] text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-all"
     />
 
     <button
@@ -246,91 +248,49 @@ export default function SignupForm() {
   )}
 </div>
 
-          {/* Confirm Password */}
+       
 
-         {/* Confirm Password */}
+        
 
-<div>
-  <label className="block mb-2 text-[15px] font-semibold text-gray-900">
-    Confirm Password *
-  </label>
 
-  <div className="relative">
-    <Lock
-      size={18}
-      className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-    />
-
-    <input
-      type={showConfirmPassword ? "text" : "password"}
-      name="confirmPassword"
-      placeholder="Confirm your password"
-      value={formData.confirmPassword}
-      onChange={handleChange}
-      className="w-full h-14 rounded-2xl border border-gray-300 bg-white pl-12 pr-12 text-[15px] text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-all"
-    />
-
-    <button
-      type="button"
-      onClick={() =>
-        setShowConfirmPassword(!showConfirmPassword)
-      }
-      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-violet-600 transition"
-    >
-      {showConfirmPassword ? (
-        <EyeOff size={20} />
-      ) : (
-        <Eye size={20} />
-      )}
-    </button>
-  </div>
-
-  {errors.confirmPassword && (
-    <p className="text-red-500 text-sm mt-1">
-      {errors.confirmPassword}
-    </p>
-  )}
-</div>
 
           {/* Role */}
 
           <div>
 
-<label className="block mb-3 text-[15px] font-semibold">
-    I am a *
+<label  className="block text-xs font-semibold mb-1">
+    I am a 
 </label>
 
 <div className="grid grid-cols-2 gap-4">
 
 <button
-type="button"
-onClick={() => handleRole("JOB_SEEKER")}
-className={`rounded-2xl border p-6 transition ${
-formData.role==="JOB_SEEKER"
-? "border-violet-500 bg-violet-50"
-: "border-gray-300 hover:border-violet-300"
-}`}
+  type="button"
+  onClick={() => handleRole("JOB_SEEKER")}
+  className={`rounded-2xl border px-3 py-1.5 transition ${
+    formData.role === "JOB_SEEKER"
+      ? "border-violet-500 bg-violet-50"
+      : "border-gray-300 hover:border-violet-300"
+  }`}
 >
+  <User
+    size={13}
+    className="mx-auto mb-1 text-violet-600"
+  />
 
-<User
-size={34}
-className="mx-auto mb-3 text-violet-600"
-/>
+  <h3 className="font-semibold text-base">
+    Job Seeker
+  </h3>
 
-<h3 className="font-semibold text-lg">
-Job Seeker
-</h3>
-
-<p className="text-gray-500 text-sm mt-1">
-Looking for opportunities
-</p>
-
+  <p className="text-gray-500 text-sm mt-0.5">
+    Looking for opportunities
+  </p>
 </button>
 
 <button
 type="button"
 onClick={() => handleRole("EMPLOYER")}
-className={`rounded-2xl border p-6 transition ${
+className={`rounded-2xl border p-3 transition ${
 formData.role==="EMPLOYER"
 ? "border-violet-500 bg-violet-50"
 : "border-gray-300 hover:border-violet-300"
@@ -338,11 +298,11 @@ formData.role==="EMPLOYER"
 >
 
 <BriefcaseBusiness
-size={34}
+size={13}
 className="mx-auto mb-3 text-gray-800"
 />
 
-<h3 className="font-semibold text-lg">
+<h3 className="font-semibold text-base">
 Employer
 </h3>
 
@@ -360,45 +320,32 @@ Hiring talent
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-14 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white text-lg font-semibold hover:opacity-95 transition"
+            className="w-full h-10 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white text-lg font-semibold hover:opacity-95 transition"
           >
             {loading ? "Creating Account..." : "Create Account"}
           </button>
 
           {/* Login */}
 
-                    {/* Login */}
+                   
 
-          <p className="text-center text-gray-500">
-
-            Already have an account?
-
-            <span
-              onClick={() => router.push("/login")}
-              className="text-violet-600 font-semibold cursor-pointer ml-2 hover:underline"
-            >
-              Sign in
-            </span>
-
-          </p>
+          
 
           {/* Terms & Privacy */}
 
-          <p className="text-center text-sm text-gray-400 mt-6 leading-6">
+          <p className="text-center text-sm text-gray-500 mt-3">
+  Already have an account?
+  <span
+    onClick={() => router.push("/login")}
+    className="ml-1 text-violet-600 font-medium cursor-pointer hover:underline"
+  >
+    Sign In
+  </span>
+</p>
 
-            By creating an account, you agree to our
-
-            <span className="text-violet-600 cursor-pointer hover:underline">
-              {" "}Terms of Service
-            </span>
-
-            {" "}and{" "}
-
-            <span className="text-violet-600 cursor-pointer hover:underline">
-              Privacy Policy
-            </span>.
-
-          </p>
+<p className="text-center text-xs text-gray-400 mt-2">
+  By continuing, you agree to our Terms & Privacy Policy.
+</p>
 
         </form>
 
