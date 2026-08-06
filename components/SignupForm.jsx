@@ -50,7 +50,7 @@ export default function SignupForm() {
  const handleSubmit = async (e) => {
   e.preventDefault();
 
-  alert("Submit clicked");
+  
 
   setLoading(true);
 
@@ -101,14 +101,8 @@ export default function SignupForm() {
 
     alert("Account created successfully!");
 
-    if (data.user.role === "EMPLOYER") {
-  router.push("/employer/dashboard");
-} else if (data.user.role === "JOB_SEEKER") {
-  router.push("/jobseeker/dashboard");
-} else {
-  // User didn't choose a role
-  router.push("/jobseeker/dashboard"); // or "/jobseeker/dashboard" if you haven't made it yet
-}
+    // Redirect every user to the common dashboard
+router.push("/jobs");
   } catch (error) {
     alert("Something went wrong.");
   }

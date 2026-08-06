@@ -27,42 +27,42 @@ export async function POST(request) {
     const { email, password } = result.data;
 
     // Find user by email
-    const user = await prisma.user.findUnique({
-      where: {
-        email,
-      },
-    });
+    // Find user by email
+const user = await prisma.user.findUnique({
+  where: {
+    email,
+  },
+});
 
-    // User not found
-    if (!user) {
-      return NextResponse.json(
-        {
-          message: "Invalid email or password",
-        },
-        {
-          status: 401,
-        }
-      );
+// Email not found
+if (!user) {
+  return NextResponse.json(
+    {
+      message: "Account not found. Please create an account first.",
+    },
+    {
+      status: 404,
     }
+  );
+}
 
-    // Compare password
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      user.password
-    );
+// Compare password
+const isPasswordCorrect = await bcrypt.compare(
+  password,
+  user.password
+);
 
-    if (!isPasswordCorrect) {
-      return NextResponse.json(
-        {
-          message: "Invalid email or password",
-        },
-        {
-          status: 401,
-        }
-      );
+// Wrong password
+if (!isPasswordCorrect) {
+  return NextResponse.json(
+    {
+      message: "Incorrect password.",
+    },
+    {
+      status: 401,
     }
-
-    // Login successful
+  );
+}
    // Login successful
 
 const response = NextResponse.json(

@@ -47,17 +47,15 @@ export default function JobList() {
 
       {/* Heading */}
 
-      <div className="mb-8">
+     <div className="mb-8">
+  <h2 className="text-4xl font-bold text-gray-900">
+    All Job Listings
+  </h2>
 
-        <h2 className="text-4xl font-bold text-gray-900">
-          Recommended Jobs
-        </h2>
-
-        <p className="text-gray-500 mt-2">
-          Jobs that match your profile and interests
-        </p>
-
-      </div>
+  <p className="text-gray-500 mt-2">
+    Browse available positions from companies hiring  around the world.
+  </p>
+</div>
 
       {/* No Jobs */}
 

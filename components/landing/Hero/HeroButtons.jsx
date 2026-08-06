@@ -1,26 +1,16 @@
 import Link from "next/link";
-import { Search, BriefcaseBusiness } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export default function HeroButtons() {
   return (
-    <div className="flex flex-wrap gap-4 mt-8">
-      
+    <div className="mt-8">
       <Link
-        href="/jobs"
-        className="flex items-center gap-2 bg-violet-600 text-white px-6 py-3 rounded-xl hover:bg-violet-700 transition"
+        href="/login"
+        className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-7 py-3 text-white font-medium shadow-md transition-all duration-300 hover:bg-violet-700 hover:shadow-lg"
       >
-        <Search size={18} />
-        Find Jobs
+        Start Now
+        <ArrowRight size={18} />
       </Link>
-
-      <Link
-        href="/signup"
-        className="flex items-center gap-2 border border-gray-300 px-6 py-3 rounded-xl hover:bg-gray-100 transition"
-      >
-        <BriefcaseBusiness size={18} />
-        Post a Job
-      </Link>
-
     </div>
   );
 }

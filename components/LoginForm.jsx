@@ -70,7 +70,7 @@ export default function LoginForm() {
       }
 
       
-      alert("Login successful!");
+      
 
 // Redirect every authenticated user to the Jobs page
 router.push("/jobs");

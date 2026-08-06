@@ -4,9 +4,9 @@ import { PrismaClient } from "../../generated/prisma/client";
 
 const prisma = new PrismaClient();
 
-
 export async function POST(request) {
   console.log("Signup API was called");
+
   try {
     const body = await request.json();
 
@@ -16,7 +16,6 @@ export async function POST(request) {
       password,
       role,
     } = body;
-
 
     // Basic validation
     if (!name || !email || !password) {
@@ -30,15 +29,12 @@ export async function POST(request) {
       );
     }
 
-
     // Check existing user
-
     const existingUser = await prisma.user.findUnique({
       where: {
         email,
       },
     });
-
 
     if (existingUser) {
       return NextResponse.json(
@@ -51,19 +47,10 @@ export async function POST(request) {
       );
     }
 
-
-
     // Hash password
-
-    const hashedPassword = await bcrypt.hash(
-      password,
-      10
-    );
-
-
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
-
     const user = await prisma.user.create({
       data: {
         name,
@@ -73,9 +60,8 @@ export async function POST(request) {
       },
     });
 
-
-
-    return NextResponse.json(
+    // ✅ Create response
+    const response = NextResponse.json(
       {
         message: "User created successfully",
         user: {
@@ -90,17 +76,25 @@ export async function POST(request) {
       }
     );
 
+    // ✅ Store login cookie
+    response.cookies.set("userId", String(user.id), {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+    });
+
+    return response;
 
   } catch (error) {
-  console.error("Signup Error:", error);
+    console.error("Signup Error:", error);
 
-  return NextResponse.json(
-    {
-      message: error.message,
-    },
-    {
-      status: 500,
-    }
-  );
-}
+    return NextResponse.json(
+      {
+        message: error.message,
+      },
+      {
+        status: 500,
+      }
+    );
+  }
 }

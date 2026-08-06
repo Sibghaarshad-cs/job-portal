@@ -552,7 +552,26 @@ setLoading(false);
             Cancel
           </button>
 
-          <button type="submit">
+  <button
+  type="submit"
+  disabled={loading}
+  className="
+    px-6
+    py-2
+    rounded-lg
+    bg-gradient-to-r
+    from-violet-600
+    to-fuchsia-500
+    text-white
+    text-sm
+    font-semibold
+    shadow-md
+    hover:opacity-90
+    transition
+    disabled:opacity-50
+    disabled:cursor-not-allowed
+  "
+>
   {loading
     ? jobId
       ? "Updating..."

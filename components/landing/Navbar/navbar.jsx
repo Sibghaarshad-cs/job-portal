@@ -1,5 +1,5 @@
 import Logo from "./logo";
-import NavLinks from "./NavLinks";
+
 import AuthButtons from "./AuthButtons";
 
 export default function Navbar() {
@@ -10,7 +10,7 @@ export default function Navbar() {
 
         <Logo />
 
-        <NavLinks />
+        
 
         <AuthButtons />
 
