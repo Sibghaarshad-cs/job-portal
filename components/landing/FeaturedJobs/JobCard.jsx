@@ -25,7 +25,7 @@ export default function JobCard({ job }) {
         </p>
 
         <Link
-          href="/jobs"
+          href="/login"
           className="border border-violet-500 text-violet-600 px-4 py-2 rounded-lg hover:bg-violet-600 hover:text-white transition"
         >
           Apply Now

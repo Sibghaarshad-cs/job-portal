@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   Building2,
   MapPin,
@@ -79,9 +80,11 @@ export default function JobCard({
 
           </h2>
 
-          <button
+          <Link
+            href="/login"
             className="
             mt-4
+            inline-block
             border
             border-violet-600
             text-violet-600
@@ -91,10 +94,11 @@ export default function JobCard({
             hover:bg-violet-600
             hover:text-white
             transition
+            text-center
             "
           >
             Apply Now
-          </button>
+          </Link>
 
         </div>
 
