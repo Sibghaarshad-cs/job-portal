@@ -1,16 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import JobCard from "./JobCard";
 
 export default function JobList() {
+  const searchParams = useSearchParams();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchJobs() {
+      setLoading(true);
+
       try {
-        const response = await fetch("/api/jobs");
+        const queryString = searchParams.toString();
+        const response = await fetch(
+          `/api/jobs${queryString ? `?${queryString}` : ""}`
+        );
         const data = await response.json();
 
         if (response.ok) {
@@ -26,7 +33,7 @@ export default function JobList() {
     }
 
     fetchJobs();
-  }, []);
+  }, [searchParams]);
 
   if (loading) {
     return (

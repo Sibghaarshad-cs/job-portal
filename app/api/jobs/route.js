@@ -4,21 +4,63 @@ import { cookies } from "next/headers";
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function GET(request) {
   try {
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;
+    const { searchParams } = new URL(request.url);
+
+    const search = searchParams.get("search")?.trim();
+    const location = searchParams.get("location")?.trim();
+    const category = searchParams.get("category")?.trim();
+    const jobType = searchParams.get("jobType")?.trim();
+
+    const where = {
+      status: "Active",
+      ...(category && { category }),
+      ...(jobType && { jobType }),
+      ...(location && {
+        location: {
+          contains: location,
+          mode: "insensitive",
+        },
+      }),
+      ...(userId && {
+        userId: {
+          not: Number(userId),
+        },
+      }),
+    };
+
+    if (search) {
+      where.AND = [
+        {
+          OR: [
+            {
+              title: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              companyName: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              description: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          ],
+        },
+      ];
+    }
 
     const jobs = await prisma.job.findMany({
-      where: {
-        status: "Active",
-
-        ...(userId && {
-          userId: {
-            not: Number(userId),
-          },
-        }),
-      },
+      where,
       orderBy: {
         postedAt: "desc",
       },
