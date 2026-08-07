@@ -1,11 +1,19 @@
 "use client";
 
+import { Suspense, useState } from "react";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
-import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { loginSchema } from "../schemas/loginSchema";
 
 export default function LoginForm() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <LoginFormContent />
+    </Suspense>
+  );
+}
+
+function LoginFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnPathRaw = searchParams.get("next") || "/jobs";

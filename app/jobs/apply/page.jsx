@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { User, Mail, Phone, DollarSign, CalendarDays, FileText, UploadCloud, ArrowRight } from "lucide-react";
 
 export default function ApplyPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <ApplyPageContent />
+    </Suspense>
+  );
+}
+
+function ApplyPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const jobId = searchParams.get("jobId");
@@ -22,6 +30,7 @@ export default function ApplyPage() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [resumeError, setResumeError] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -67,10 +76,19 @@ export default function ApplyPage() {
   const [resumeFile, setResumeFile] = useState(null);
   const handleFile = (e) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setResumeFile(file);
-      setFormData((cur) => ({ ...cur, resume: file.name }));
+    if (!file) return;
+
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setResumeFile(null);
+      setResumeError("Resume must be 5MB or smaller.");
+      setFormData((cur) => ({ ...cur, resume: "" }));
+      return;
     }
+
+    setResumeFile(file);
+    setResumeError("");
+    setFormData((cur) => ({ ...cur, resume: file.name }));
   };
 
   const handleSubmit = async (e) => {
@@ -86,7 +104,9 @@ export default function ApplyPage() {
       fd.append("expectedSalary", formData.expectedSalary || "0");
       fd.append("availableFrom", formData.availableFrom || "");
       fd.append("coverLetter", formData.coverLetter || "");
-      if (resumeFile) fd.append("resume", resumeFile);
+      if (resumeFile) {
+        fd.append("resume", resumeFile, resumeFile.name);
+      }
 
       const res = await fetch(`/api/jobs/${jobId}/apply`, {
         method: "POST",
@@ -195,6 +215,7 @@ export default function ApplyPage() {
                   <p className="text-sm text-slate-500">PDF, DOC, DOCX (Max. 5MB)</p>
                 </div>
                 {formData.resume && <p className="mt-3 text-sm text-slate-900">Selected file: {formData.resume}</p>}
+                {resumeError && <p className="mt-2 text-sm text-red-500">{resumeError}</p>}
               </label>
             </div>
 

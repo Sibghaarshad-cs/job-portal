@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Sidebar from "../../../components/employer/Sidebar";
 import TopNavbar from "../../../components/employer/TopNavbar";
@@ -39,6 +40,14 @@ const formatAppliedDate = (dateString) => {
 };
 
 export default function ApplicationsPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-gray-100">Loading applications...</div>}>
+      <ApplicationsPageContent />
+    </Suspense>
+  );
+}
+
+function ApplicationsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const jobId = searchParams.get("jobId");
@@ -167,12 +176,19 @@ export default function ApplicationsPage() {
                       </div>
 
                       <div className="flex flex-wrap items-center justify-end gap-3">
-                        <button
-                          type="button"
-                          className="inline-flex items-center justify-center rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
-                        >
-                          View Profile
-                        </button>
+                        {application.resume ? (
+                          <a
+                            href={application.resume.startsWith("http") ? application.resume : application.resume.startsWith("/") ? application.resume : `/${application.resume}`}
+                            download={application.resume.split("/").pop() || `resume-${application.id}.pdf`}
+                            className="inline-flex items-center justify-center rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
+                          >
+                            Download Resume
+                          </a>
+                        ) : (
+                          <span className="inline-flex items-center justify-center rounded-2xl border border-gray-200 bg-gray-100 px-5 py-3 text-sm font-semibold text-gray-500">
+                            No Resume
+                          </span>
+                        )}
                         <div className="relative inline-flex min-w-[150px] items-center rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
                           <span className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900">
                             <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />

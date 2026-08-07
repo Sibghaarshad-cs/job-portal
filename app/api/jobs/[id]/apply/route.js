@@ -13,7 +13,7 @@ async function saveFile(file, filename) {
   const safeName = `${Date.now()}-${filename.replace(/[^a-z0-9.\-]/gi, "_")}`;
   const filePath = path.join(uploadsDir, safeName);
   const buffer = Buffer.from(await file.arrayBuffer());
-  fs.writeFileSync(filePath, buffer);
+  await fs.promises.writeFile(filePath, buffer);
   return `/uploads/${safeName}`;
 }
 
@@ -42,6 +42,7 @@ export async function POST(request, context) {
       const expectedSalary = Number(formData.get("expectedSalary")?.toString() || 0);
       const availableFromRaw = formData.get("availableFrom")?.toString();
       const coverLetter = formData.get("coverLetter")?.toString() || "";
+      const availableFrom = availableFromRaw ? new Date(availableFromRaw) : new Date();
 
       let resumePath = null;
       const resumeFile = formData.get("resume");
@@ -56,7 +57,7 @@ export async function POST(request, context) {
           status: "APPLIED",
           coverLetter,
           expectedSalary,
-          availableFrom: availableFromRaw ? new Date(availableFromRaw) : null,
+          availableFrom,
           resume: resumePath,
         },
       });
@@ -73,7 +74,7 @@ export async function POST(request, context) {
         status: "APPLIED",
         coverLetter: body.coverLetter || "",
         expectedSalary: Number(body.expectedSalary) || 0,
-        availableFrom: body.availableFrom ? new Date(body.availableFrom) : null,
+        availableFrom: body.availableFrom ? new Date(body.availableFrom) : new Date(),
         resume: body.resume || null,
       },
     });
