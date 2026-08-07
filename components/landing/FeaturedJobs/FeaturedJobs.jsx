@@ -9,7 +9,9 @@ export default function FeaturedJobs() {
   useEffect(() => {
     async function fetchJobs() {
       try {
-        const response = await fetch("/api/jobs");
+        const response = await fetch(
+          "/api/jobs?excludeOwn=false"
+        );
 
         if (!response.ok) {
           throw new Error("Failed to fetch jobs");

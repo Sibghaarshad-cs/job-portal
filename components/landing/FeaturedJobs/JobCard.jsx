@@ -1,27 +1,41 @@
 import Link from "next/link";
 
-export default function JobCard({ job }) {
+export default function JobCard({
+  title,
+  company,
+  location,
+  salaryMin,
+  salaryMax,
+  category,
+  jobType,
+  postedDate,
+}) {
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition duration-300">
 
       <div>
         <h3 className="text-xl font-semibold text-gray-900">
-          {job.title}
+          {title}
         </h3>
 
         <p className="text-gray-500 mt-1">
-          {job.companyName}
+          {company}
         </p>
       </div>
 
       <span className="inline-block mt-5 bg-violet-100 text-violet-600 text-sm font-medium px-3 py-1 rounded-full">
-        {job.jobType}
+        {jobType}
       </span>
+
+      <div className="mt-6 space-y-2 text-sm text-gray-500">
+        <p>{location}</p>
+        <p>{postedDate}</p>
+      </div>
 
       <div className="flex justify-between items-center mt-8">
 
         <p className="text-gray-700 font-semibold">
-          ${job.salaryMin.toLocaleString()} - ${job.salaryMax.toLocaleString()}
+          ${salaryMin.toLocaleString()} - ${salaryMax.toLocaleString()}
         </p>
 
         <Link

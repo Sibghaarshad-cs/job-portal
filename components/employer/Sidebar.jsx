@@ -80,21 +80,6 @@ export default function Sidebar() {
       </nav>
 
 
-      {/* Logout */}
-      <div className="p-4 border-t border-gray-200">
-
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition"
-        >
-
-          <LogOut size={20} />
-
-          Logout
-
-        </button>
-
-      </div>
 
 
     </aside>

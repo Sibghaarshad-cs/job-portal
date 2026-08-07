@@ -15,6 +15,10 @@ export async function GET(request) {
     const category = searchParams.get("category")?.trim();
     const jobType = searchParams.get("jobType")?.trim();
 
+    const excludeOwn = searchParams.get("excludeOwn");
+    const shouldExcludeOwn =
+      excludeOwn === null ? true : excludeOwn === "true";
+
     const where = {
       status: "Active",
       ...(category && { category }),
@@ -25,7 +29,7 @@ export async function GET(request) {
           mode: "insensitive",
         },
       }),
-      ...(userId && {
+      ...(userId && shouldExcludeOwn && {
         userId: {
           not: Number(userId),
         },
