@@ -55,7 +55,7 @@ export default function JobRow({
 
         <Users size={18} />
 
-        <span>0</span>
+        <span>{job._count?.applications ?? 0}</span>
 
       </div>
 

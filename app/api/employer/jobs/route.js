@@ -23,6 +23,13 @@ export async function GET() {
       orderBy: {
         postedAt: "desc",
       },
+      include: {
+        _count: {
+          select: {
+            applications: true,
+          },
+        },
+      },
     });
 
     return NextResponse.json(jobs);
