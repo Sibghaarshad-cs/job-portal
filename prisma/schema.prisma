@@ -14,15 +14,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 model User {
-  id            Int           @id @default(autoincrement())
-  name          String
-  email         String        @unique
-  password      String
-  role          String
-  createdAt     DateTime      @default(now())
+  id             Int      @id @default(autoincrement())
+  name           String
+  email          String   @unique
+  password       String
+  contactNumber  String?
+  role           String
+  createdAt      DateTime @default(now())
 
-  jobs          Job[]
-  applications  Application[]
+  jobs           Job[]
+  applications   Application[]
 }
 model Job {
   id               Int      @id @default(autoincrement())
@@ -43,14 +44,24 @@ model Job {
   user             User     @relation(fields: [userId], references: [id])
   applications     Application[]
 }
+enum ApplicationStatus {
+  APPLIED
+  INTERVIEW
+  ACCEPTED
+  REJECTED
+}
 model Application {
   id               Int      @id @default(autoincrement())
   jobId            Int
   userId           Int
+
   status           String
   coverLetter      String
   expectedSalary   Int
   availableFrom    DateTime
+
+  resume           String?
+
   appliedAt        DateTime @default(now())
 
   job              Job      @relation(fields: [jobId], references: [id])
