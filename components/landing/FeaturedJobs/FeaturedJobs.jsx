@@ -9,9 +9,7 @@ export default function FeaturedJobs() {
   useEffect(() => {
     async function fetchJobs() {
       try {
-        const response = await fetch(
-          "/api/jobs?excludeOwn=false"
-        );
+        const response = await fetch("/api/jobs?excludeOwn=false");
 
         if (!response.ok) {
           throw new Error("Failed to fetch jobs");
@@ -33,26 +31,28 @@ export default function FeaturedJobs() {
     <section className="py-20">
       <div className="max-w-7xl mx-auto px-8">
         <div className="flex items-center justify-between mb-10">
-          <h2 className="text-4xl font-bold text-gray-900">
-            Featured Jobs
-          </h2>
+          <h2 className="text-4xl font-bold text-gray-900">Featured Jobs</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {jobs.map((job) => (
-            <JobCard
-              key={job.id}
-              title={job.title}
-              company={job.companyName}
-              location={job.location}
-              salaryMin={job.salaryMin}
-              salaryMax={job.salaryMax}
-              category={job.category}
-              jobType={job.jobType}
-              postedDate={new Date(job.postedAt).toLocaleDateString()}
-              href={`/jobs/apply?jobId=${job.id}`}
-            />
-          ))}
+          {jobs.map((job) => {
+            const applyHref = `/login?next=${encodeURIComponent(`/jobs/apply?jobId=${job.id}`)}`;
+
+            return (
+              <JobCard
+                key={job.id}
+                title={job.title}
+                company={job.companyName}
+                location={job.location}
+                salaryMin={job.salaryMin}
+                salaryMax={job.salaryMax}
+                category={job.category}
+                jobType={job.jobType}
+                postedDate={new Date(job.postedAt).toLocaleDateString()}
+                href={applyHref}
+              />
+            );
+          })}
         </div>
       </div>
     </section>

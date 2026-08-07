@@ -77,11 +77,7 @@ export default function LoginForm() {
         return;
       }
 
-      
-      
-
-// Redirect every authenticated user to the Jobs page
-router.push("/jobs");
+      router.push(returnPath);
     } catch (error) {
       setErrors({
         general: "Something went wrong",
