@@ -39,10 +39,6 @@ export async function POST(request, context) {
       const name = formData.get("name")?.toString() || "";
       const email = formData.get("email")?.toString() || "";
       const contact = formData.get("contact")?.toString() || "";
-      const expectedSalary = Number(formData.get("expectedSalary")?.toString() || 0);
-      const availableFromRaw = formData.get("availableFrom")?.toString();
-      const coverLetter = formData.get("coverLetter")?.toString() || "";
-      const availableFrom = availableFromRaw ? new Date(availableFromRaw) : new Date();
 
       let resumePath = null;
       const resumeFile = formData.get("resume");
@@ -55,9 +51,6 @@ export async function POST(request, context) {
           jobId: Number(id),
           userId: Number(userId),
           status: "APPLIED",
-          coverLetter,
-          expectedSalary,
-          availableFrom,
           resume: resumePath,
         },
       });
@@ -72,9 +65,6 @@ export async function POST(request, context) {
         jobId: Number(id),
         userId: Number(userId),
         status: "APPLIED",
-        coverLetter: body.coverLetter || "",
-        expectedSalary: Number(body.expectedSalary) || 0,
-        availableFrom: body.availableFrom ? new Date(body.availableFrom) : new Date(),
         resume: body.resume || null,
       },
     });

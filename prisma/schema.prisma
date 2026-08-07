@@ -56,9 +56,6 @@ model Application {
   userId           Int
 
   status           String
-  coverLetter      String
-  expectedSalary   Int
-  availableFrom    DateTime
 
   resume           String?
 

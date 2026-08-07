@@ -6,7 +6,12 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-export default function StatsCards() {
+export default function StatsCards({ stats = {} }) {
+  const activeJobs = stats?.activeJobs ?? 0;
+  const totalJobs = stats?.totalJobs ?? 0;
+  const totalApplications = stats?.totalApplications ?? 0;
+  const hiredApplications = stats?.hiredApplications ?? 0;
+
   return (
    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-8">
 
@@ -28,7 +33,7 @@ export default function StatsCards() {
             </h3>
 
             <p className="text-5xl font-bold text-gray-900 mt-2">
-              3
+              {activeJobs}
             </p>
           </div>
 
@@ -68,7 +73,7 @@ export default function StatsCards() {
       </h3>
 
       <p className="text-5xl font-bold text-gray-900 mt-2">
-        8
+        {totalJobs}
       </p>
 
     </div>
@@ -109,7 +114,7 @@ export default function StatsCards() {
             </h3>
 
             <p className="text-5xl font-bold text-gray-900 mt-2">
-              11
+              {totalApplications}
             </p>
 
           </div>
@@ -150,7 +155,7 @@ export default function StatsCards() {
             </h3>
 
             <p className="text-5xl font-bold text-gray-900 mt-2">
-              3
+              {hiredApplications}
             </p>
 
           </div>

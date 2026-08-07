@@ -22,9 +22,6 @@ function ApplyPageContent() {
     name: "",
     email: "",
     contact: "",
-    expectedSalary: "",
-    availableFrom: "",
-    coverLetter: "",
     resume: "",
   });
   const [errors, setErrors] = useState({});
@@ -101,9 +98,6 @@ function ApplyPageContent() {
       fd.append("name", formData.name);
       fd.append("email", formData.email);
       fd.append("contact", formData.contact);
-      fd.append("expectedSalary", formData.expectedSalary || "0");
-      fd.append("availableFrom", formData.availableFrom || "");
-      fd.append("coverLetter", formData.coverLetter || "");
       if (resumeFile) {
         fd.append("resume", resumeFile, resumeFile.name);
       }
@@ -177,31 +171,7 @@ function ApplyPageContent() {
           </div>
 
           <div className="rounded-xl border border-slate-200 p-6">
-            <h2 className="text-lg font-semibold text-violet-700 mb-4">Application Details</h2>
-            <div className="grid gap-4 md:grid-cols-3">
-              <div>
-                <label className="text-sm text-slate-700">Expected Salary (PKR)</label>
-                <div className="mt-2 relative rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-                  <DollarSign size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input type="number" name="expectedSalary" value={formData.expectedSalary} onChange={handleChange} placeholder="Enter expected salary" className="pl-10 py-2 leading-7 w-full bg-transparent outline-none text-sm" />
-                </div>
-              </div>
-
-              <div>
-                <label className="text-sm text-slate-700">Available From</label>
-                <div className="mt-2 relative rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-                  <CalendarDays size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input type="date" name="availableFrom" value={formData.availableFrom} onChange={handleChange} className="pl-10 py-1.5 leading-6 w-full bg-transparent outline-none text-sm" />
-                </div>
-              </div>
-
-              <div className="md:col-span-3">
-                <label className="text-sm text-slate-700">Cover Letter</label>
-                <div className="mt-2 relative rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-                  <textarea name="coverLetter" value={formData.coverLetter} onChange={handleChange} placeholder="Tell why you are a great fit for this role..." rows={5} className="w-full py-2 leading-6 bg-transparent outline-none text-sm resize-none" />
-                </div>
-              </div>
-            </div>
+            <h2 className="text-lg font-semibold text-violet-700 mb-4">Resume Upload</h2>
 
             <div className="mt-6">
               <label className="text-sm text-slate-700 mb-3 block">CV / Resume</label>

@@ -96,7 +96,7 @@ export default async function ApplicationDetailPage({ params, searchParams }) {
                 <p className="mt-2 text-base font-semibold text-slate-900">{formatAppliedDate(application.appliedAt)}</p>
               </div>
             </div>
-            <div className="grid gap-6 lg:grid-cols-3">
+            <div className="grid gap-6 lg:grid-cols-2">
               <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
                 <div className="mb-4 flex items-center gap-3 text-slate-900">
                   <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-200 text-xl">👤</span>
@@ -117,31 +117,6 @@ export default async function ApplicationDetailPage({ params, searchParams }) {
                   <div>
                     <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Contact</p>
                     <p className="mt-2 font-semibold text-slate-900">{application.user.contactNumber || "—"}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
-                <div className="mb-4 flex items-center gap-3 text-slate-900">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-200 text-xl">📄</span>
-                  <div>
-                    <h2 className="text-base font-semibold">Application Details</h2>
-                    <p className="text-sm text-slate-500">Salary, availability and cover letter.</p>
-                  </div>
-                </div>
-                <div className="space-y-4 text-sm text-slate-700">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Expected Salary (PKR)</p>
-                    <p className="mt-2 font-semibold text-slate-900">{application.expectedSalary?.toLocaleString() || "—"}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Available From</p>
-                    <p className="mt-2 font-semibold text-slate-900">{application.availableFrom ? new Date(application.availableFrom).toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" }) : "—"}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Cover Letter</p>
-                    <div className="mt-2 rounded-3xl bg-white p-4 text-sm leading-6 text-slate-700 shadow-sm">
-                      {application.coverLetter || "No cover letter provided."}
-                    </div>
                   </div>
                 </div>
               </div>

@@ -2,33 +2,33 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
-export default function ApplicationStatus() {
-
-  // Dummy data
-  // Later this will come from Prisma
-
-  const data = [
+export default function ApplicationStatus({ data: statusCounts = {} }) {
+  const chartData = [
     {
       name: "New",
-      value: 14,
+      value: statusCounts?.APPLIED ?? 0,
       color: "#8B5CF6",
     },
     {
-      name: "In Review",
-      value: 9,
-      color: "#3B82F6",
-    },
-    {
       name: "Interview",
-      value: 5,
+      value: statusCounts?.INTERVIEW ?? 0,
       color: "#F59E0B",
     },
     {
       name: "Hired",
-      value: 3,
+      value: statusCounts?.ACCEPTED ?? 0,
       color: "#10B981",
     },
+    {
+      name: "Rejected",
+      value: statusCounts?.REJECTED ?? 0,
+      color: "#EF4444",
+    },
   ];
+
+  const total = chartData.reduce((acc, item) => acc + item.value, 0);
+
+  const pieData = total === 0 ? [{ name: "Empty", value: 1, color: "#E5E7EB" }] : chartData;
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
@@ -52,14 +52,14 @@ export default function ApplicationStatus() {
           <PieChart>
 
             <Pie
-              data={data}
+              data={pieData}
               dataKey="value"
               innerRadius={60}
               outerRadius={90}
-              paddingAngle={3}
+              paddingAngle={total === 0 ? 0 : 3}
             >
 
-              {data.map((entry) => (
+              {pieData.map((entry) => (
                 <Cell
                   key={entry.name}
                   fill={entry.color}
@@ -78,7 +78,7 @@ export default function ApplicationStatus() {
 
       <div className="space-y-3 mt-2">
 
-        {data.map((item) => (
+        {chartData.map((item) => (
 
           <div
             key={item.name}

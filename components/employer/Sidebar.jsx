@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 import {
   LayoutDashboard,
@@ -11,19 +11,31 @@ import {
 } from "lucide-react";
 
 export default function Sidebar() {
-
   const router = useRouter();
-
+  const pathname = usePathname();
 
   const handleLogout = () => {
-
     // Remove login cookie
     document.cookie = "userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-
     // Redirect to landing page
     router.push("/");
   };
 
+  const isActive = (path) => {
+    if (path === "/employer/dashboard") {
+      return pathname === path;
+    }
+    return pathname.startsWith(path);
+  };
+
+  const getLinkClasses = (path) => {
+    const active = isActive(path);
+    return `w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition ${
+      active
+        ? "bg-violet-600 text-white shadow-sm"
+        : "text-gray-700 hover:bg-violet-50 hover:text-violet-600"
+    }`;
+  };
 
   return (
     <aside className="w-64 min-h-screen bg-white border-r border-gray-200 flex flex-col">
@@ -39,49 +51,53 @@ export default function Sidebar() {
         </p>
       </div>
 
-
       {/* Navigation */}
       <nav className="flex-1 mt-6 px-4 space-y-2">
 
-
         <button 
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-violet-600 text-white font-medium"
+          onClick={() => router.push("/employer/dashboard")}
+          className={getLinkClasses("/employer/dashboard")}
         >
           <LayoutDashboard size={20} />
           Dashboard
         </button>
 
-
         <button 
           onClick={() => router.push("/employer/post-job")}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-violet-50 hover:text-violet-600 transition"
+          className={getLinkClasses("/employer/post-job")}
         >
           <BriefcaseBusiness size={20} />
           Post Job
         </button>
 
-
         <button
-  onClick={() => router.push("/employer/manage-jobs")}
-  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-violet-50 hover:text-violet-600 transition"
->
-  <ClipboardList size={20} />
-  Manage Jobs
-</button>
+          onClick={() => router.push("/employer/manage-jobs")}
+          className={getLinkClasses("/employer/manage-jobs")}
+        >
+          <ClipboardList size={20} />
+          Manage Jobs
+        </button>
 
         <button 
           onClick={() => router.push("/employer/applications")}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-violet-50 hover:text-violet-600 transition"
+          className={getLinkClasses("/employer/applications")}
         >
           <FileText size={20} />
           Applications
         </button>
 
-
       </nav>
 
-
-
+      {/* Logout */}
+      <div className="p-4 border-t border-gray-200">
+        <button 
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 font-medium transition"
+        >
+          <LogOut size={20} />
+          Logout
+        </button>
+      </div>
 
     </aside>
   );

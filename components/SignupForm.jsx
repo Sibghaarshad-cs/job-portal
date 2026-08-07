@@ -101,8 +101,11 @@ export default function SignupForm() {
 
     alert("Account created successfully!");
 
-    // Redirect every user to the common dashboard
-router.push("/jobs");
+    if (data.user.role === "EMPLOYER") {
+      router.push("/employer/dashboard");
+    } else {
+      router.push("/jobs");
+    }
   } catch (error) {
     alert("Something went wrong.");
   }
