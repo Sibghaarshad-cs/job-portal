@@ -2,11 +2,19 @@
 
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { loginSchema } from "../schemas/loginSchema";
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnPathRaw = searchParams.get("next") || "/jobs";
+  let returnPath = "/jobs";
+  try {
+    returnPath = decodeURIComponent(returnPathRaw);
+  } catch (e) {
+    returnPath = returnPathRaw;
+  }
 
   const [formData, setFormData] = useState({
     email: "",

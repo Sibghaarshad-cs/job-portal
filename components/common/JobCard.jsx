@@ -16,6 +16,7 @@ export default function JobCard({
   category,
   jobType,
   postedDate,
+  href = "/login",
 }) {
   return (
     <div className="bg-white rounded-3xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 p-6">
@@ -81,7 +82,7 @@ export default function JobCard({
           </h2>
 
           <Link
-            href="/login"
+            href={href}
             className="
             mt-4
             inline-block

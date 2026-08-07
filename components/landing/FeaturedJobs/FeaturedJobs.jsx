@@ -50,6 +50,7 @@ export default function FeaturedJobs() {
               category={job.category}
               jobType={job.jobType}
               postedDate={new Date(job.postedAt).toLocaleDateString()}
+              href={`/jobs/apply?jobId=${job.id}`}
             />
           ))}
         </div>

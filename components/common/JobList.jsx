@@ -87,6 +87,7 @@ export default function JobList() {
               salaryMin={job.salaryMin}
               salaryMax={job.salaryMax}
               postedDate={new Date(job.postedAt).toLocaleDateString()}
+              href={`/jobs/apply?jobId=${job.id}`}
             />
           ))}
 
