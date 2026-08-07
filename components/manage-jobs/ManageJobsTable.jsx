@@ -62,29 +62,39 @@ export default function ManageJobsTable() {
     console.error(error);
   }
 }
- async function handleToggleStatus(id) {
-  try {
-    const response = await fetch(
-      `/api/employer/jobs/${id}`,
-      {
-        method: "PATCH",
+async function handleToggleStatus(id, currentStatus) {
+    try {
+      const response = await fetch(
+        `/api/employer/jobs/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            toggleStatus: true,
+            status:
+              currentStatus === "Active"
+                ? "Closed"
+                : "Active",
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(data.message);
+
+        // Reload jobs
+        fetchJobs();
+      } else {
+        alert(data.message);
       }
-    );
-
-    const data = await response.json();
-
-    if (response.ok) {
-      alert(data.message);
-
-      // Reload jobs
-      fetchJobs();
-    } else {
-      alert(data.message);
+    } catch (error) {
+      console.error(error);
     }
-  } catch (error) {
-    console.error(error);
   }
-}
 
   // Search
 
@@ -161,8 +171,19 @@ export default function ManageJobsTable() {
 
       {filteredJobs.length === 0 ? (
 
-        <div className="p-8">
-          <EmptyState />
+        <div className="p-8 text-center">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-12">
+            <h2 className="text-2xl font-semibold text-gray-900">
+              {status === "ALL"
+                ? "No jobs found"
+                : `No ${status.toLowerCase()} jobs found`}
+            </h2>
+            <p className="text-gray-500 mt-2">
+              {status === "ALL"
+                ? "Try a different search or add a new job."
+                : `There are no ${status.toLowerCase()} jobs in your listings.`}
+            </p>
+          </div>
         </div>
 
       ) : (

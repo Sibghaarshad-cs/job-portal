@@ -83,27 +83,35 @@ export async function PATCH(request, context) {
       );
     }
 
+    const updatedData = body.toggleStatus
+      ? {
+          status: body.status,
+        }
+      : {
+          title: body.title,
+          companyName: body.companyName,
+          companyLocation: body.companyLocation,
+          location: body.location,
+          category: body.category,
+          jobType: body.jobType,
+          description: body.description,
+          requirements: body.requirements,
+          salaryMin: Number(body.salaryMin),
+          salaryMax: Number(body.salaryMax),
+        };
+
     const updatedJob = await prisma.job.update({
       where: {
         id: Number(id),
       },
-      data: {
-        title: body.title,
-        companyName: body.companyName,
-        companyLocation: body.companyLocation,
-        location: body.location,
-        category: body.category,
-        jobType: body.jobType,
-        description: body.description,
-        requirements: body.requirements,
-        salaryMin: Number(body.salaryMin),
-        salaryMax: Number(body.salaryMax),
-      },
+      data: updatedData,
     });
 
     return NextResponse.json(
       {
-        message: "Job updated successfully",
+        message: body.toggleStatus
+          ? `Job ${body.status === "Closed" ? "closed" : "reopened"} successfully`
+          : "Job updated successfully",
         job: updatedJob,
       },
       {

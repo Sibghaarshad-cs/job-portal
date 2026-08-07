@@ -77,7 +77,7 @@ export default function JobRow({
         {/* Close */}
 
         <button
-          onClick={() => onToggleStatus(job.id)}
+          onClick={() => onToggleStatus(job.id, job.status)}
           className="flex items-center gap-1 text-orange-600 hover:text-orange-700"
         >
           <X size={16} />
