@@ -1,24 +1,35 @@
-import Navbar from "../../components/common/Navbar";
-import HeroSection from "../../components/common/HeroSection";
+import Sidebar from "../../components/candidate/Sidebar";
+import TopNavbar from "../../components/candidate/TopNavbar";
+import SearchBar from "../../components/common/SearchBar";
 import JobList from "../../components/common/JobList";
-import EmployerBanner from "../../components/common/EmployerBanner";
 
 export default function JobsPage() {
   return (
-    <main className="min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50">
 
-      {/* Navigation */}
-      <Navbar />
+      {/* Sidebar */}
+      <Sidebar />
 
-      {/* Hero Section */}
-      <HeroSection />
+      {/* Main Content */}
+      <main className="flex-1">
 
-      {/* Recommended Jobs */}
-      <JobList />
+        {/* Top Navbar */}
+        <TopNavbar />
 
-      {/* Employer CTA */}
-      <EmployerBanner />
+        <div className="p-8 space-y-6">
+          
+          {/* Search bar directly on top */}
+          <div className="max-w-7xl mx-auto">
+            <SearchBar />
+          </div>
 
-    </main>
+          {/* Recommended Jobs */}
+          <JobList />
+
+        </div>
+
+      </main>
+
+    </div>
   );
 }

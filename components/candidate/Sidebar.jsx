@@ -1,14 +1,11 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-
 import {
   LayoutDashboard,
   BriefcaseBusiness,
-  ClipboardList,
-  FileText,
+  Building2,
   LogOut,
-  User,
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -23,10 +20,10 @@ export default function Sidebar() {
   };
 
   const isActive = (path) => {
-    if (path === "/employer/dashboard") {
+    if (path === "/jobs/dashboard") {
       return pathname === path;
     }
-    return pathname.startsWith(path);
+    return pathname === path;
   };
 
   const getLinkClasses = (path) => {
@@ -40,63 +37,43 @@ export default function Sidebar() {
 
   return (
     <aside className="w-64 min-h-screen bg-white border-r border-gray-200 flex flex-col">
-
       {/* Logo */}
       <div className="px-8 py-8 border-b border-gray-200">
         <h1 className="text-2xl font-bold text-violet-600">
           JobPortal
         </h1>
-
         <p className="text-sm text-gray-500 mt-1">
-          Employer Portal
+          Job Seeker Portal
         </p>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 mt-6 px-4 space-y-2">
-
         <button 
-          onClick={() => router.push("/employer/dashboard")}
-          className={getLinkClasses("/employer/dashboard")}
+          onClick={() => router.push("/jobs/dashboard")}
+          className={getLinkClasses("/jobs/dashboard")}
         >
           <LayoutDashboard size={20} />
           Dashboard
         </button>
 
         <button 
-          onClick={() => router.push("/employer/post-job")}
-          className={getLinkClasses("/employer/post-job")}
+          onClick={() => router.push("/jobs")}
+          className={getLinkClasses("/jobs")}
         >
           <BriefcaseBusiness size={20} />
-          Post Job
+          Browse Jobs
         </button>
-
-        <button
-          onClick={() => router.push("/employer/manage-jobs")}
-          className={getLinkClasses("/employer/manage-jobs")}
-        >
-          <ClipboardList size={20} />
-          Manage Jobs
-        </button>
-
-        <button 
-          onClick={() => router.push("/employer/applications")}
-          className={getLinkClasses("/employer/applications")}
-        >
-          <FileText size={20} />
-          Applications
-        </button>
-
       </nav>
 
       {/* Switch / Logout */}
       <div className="p-4 border-t border-gray-200 space-y-1">
         <button 
-          onClick={() => router.push("/jobs")}
+          onClick={() => router.push("/employer/dashboard")}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-violet-600 hover:bg-violet-50 font-medium transition"
         >
-          <User size={20} />
-          Switch to Job Seeker
+          <Building2 size={20} />
+          Switch to Employer
         </button>
 
         <button 
@@ -107,7 +84,6 @@ export default function Sidebar() {
           Logout
         </button>
       </div>
-
     </aside>
   );
 }

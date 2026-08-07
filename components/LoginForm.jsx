@@ -85,11 +85,7 @@ function LoginFormContent() {
         return;
       }
 
-      if (returnPath === "/jobs" && data.user.role === "EMPLOYER") {
-        router.push("/employer/dashboard");
-      } else {
-        router.push(returnPath);
-      }
+      router.push(returnPath);
     } catch (error) {
       setErrors({
         general: "Something went wrong",
