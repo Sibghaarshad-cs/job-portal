@@ -13,7 +13,7 @@ export default function Home() {
       <Hero />
       <Features />
       <FeaturedJobs />
-       <EmployerBanner redirectTo="/login" />
+      <EmployerBanner redirectTo="/login?next=/employer/dashboard" />
 
       <HowItWorks />
       <Statistics />
