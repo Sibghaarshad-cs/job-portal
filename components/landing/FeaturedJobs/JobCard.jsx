@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 
 export default function JobCard({
@@ -6,13 +9,17 @@ export default function JobCard({
   location,
   salaryMin,
   salaryMax,
+  salaryCurrency,
   category,
   jobType,
   postedDate,
 }) {
-  return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition duration-300">
+  const [displayCurrency, setDisplayCurrency] = useState(
+    salaryCurrency || "PKR"
+  );
 
+  return (
+    <div>
       <div>
         <h3 className="text-xl font-semibold text-gray-900">
           {title}
@@ -34,9 +41,37 @@ export default function JobCard({
 
       <div className="flex justify-between items-center mt-8">
 
-        <p className="text-gray-700 font-semibold">
-          ${salaryMin.toLocaleString()} - ${salaryMax.toLocaleString()}
-        </p>
+        <div>
+          <p className="text-gray-700 font-semibold">
+            {salaryCurrency === "PKR" && "Rs "}
+            {salaryCurrency === "USD" && "$"}
+            {salaryCurrency === "EUR" && "€"}
+            {salaryCurrency === "GBP" && "£"}
+
+            {salaryMin.toLocaleString()} - {salaryMax.toLocaleString()}
+          </p>
+
+          <div className="mt-2 flex items-center gap-2">
+            <span className="text-xs text-gray-500">
+              View in:
+            </span>
+
+            <select
+              value={displayCurrency}
+              onChange={(e) => setDisplayCurrency(e.target.value)}
+              className="text-xs border border-gray-300 rounded-md px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-violet-500"
+            >
+              <option value={salaryCurrency || "PKR"}>
+                {salaryCurrency || "PKR"}
+              </option>
+
+              <option value="PKR">PKR</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="GBP">GBP</option>
+            </select>
+          </div>
+        </div>
 
         <Link
           href="/login"
@@ -46,7 +81,6 @@ export default function JobCard({
         </Link>
 
       </div>
-
     </div>
   );
 }

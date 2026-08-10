@@ -30,6 +30,7 @@ const jobId = searchParams.get("id");
     jobType: "",
     salaryMin: "",
     salaryMax: "",
+    salaryCurrency: "PKR",
     description: "",
     requirements: "",
   });
@@ -64,6 +65,7 @@ async function fetchJob() {
       jobType: data.jobType || "",
       salaryMin: data.salaryMin?.toString() || "",
       salaryMax: data.salaryMax?.toString() || "",
+      salaryCurrency: data.salaryCurrency || "PKR",
       description: data.description || "",
       requirements: data.requirements || "",
     });
@@ -398,74 +400,97 @@ setLoading(false);
         </div>
                 {/* Salary */}
 
-        <div>
+        {/* Salary */}
 
-          <label className="block text-xs font-semibold mb-1">
-            Salary Range
-          </label>
+<div>
 
-          <div className="grid grid-cols-2 gap-4">
+  <label className="block text-xs font-semibold mb-1">
+    Salary Range
+  </label>
 
-            <div>
+  <div className="grid grid-cols-3 gap-4">
 
-              <div className="relative">
+    {/* Minimum Salary */}
 
-                <DollarSign
-                  size={16}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                />
+    <div>
 
-                <input
-                  type="number"
-                  name="salaryMin"
-                  placeholder="Minimum Salary"
-                  value={formData.salaryMin}
-                  onChange={handleChange}
-                  className="w-full h-10 rounded-lg border border-gray-300 pl-10 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-                />
+      
 
-              </div>
+      <div className="relative">
 
-              {errors.salaryMin && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.salaryMin}
-                </p>
-              )}
+        
 
-            </div>
+        <input
+          type="number"
+          name="salaryMin"
+          placeholder="Minimum Salary"
+          value={formData.salaryMin}
+          onChange={handleChange}
+          className="w-full h-10 rounded-lg border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+        />
 
-            <div>
+      </div>
 
-              <div className="relative">
+      {errors.salaryMin && (
+        <p className="text-red-500 text-xs mt-1">
+          {errors.salaryMin}
+        </p>
+      )}
 
-                <DollarSign
-                  size={16}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                />
+    </div>
 
-                <input
-                  type="number"
-                  name="salaryMax"
-                  placeholder="Maximum Salary"
-                  value={formData.salaryMax}
-                  onChange={handleChange}
-                  className="w-full h-10 rounded-lg border border-gray-300 pl-10 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-                />
 
-              </div>
+    {/* Maximum Salary */}
 
-              {errors.salaryMax && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.salaryMax}
-                </p>
-              )}
+    <div>
 
-            </div>
+      
 
-          </div>
+      <div className="relative">
 
-        </div>
+        
+        <input
+          type="number"
+          name="salaryMax"
+          placeholder="Maximum Salary"
+          value={formData.salaryMax}
+          onChange={handleChange}
+          className="w-full h-10 rounded-lg border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" />
 
+      </div>
+
+      {errors.salaryMax && (
+        <p className="text-red-500 text-xs mt-1">
+          {errors.salaryMax}
+        </p>
+      )}
+
+    </div>
+
+
+    {/* Currency */}
+
+    <div>
+
+     
+
+      <select
+        name="salaryCurrency"
+        value={formData.salaryCurrency}
+        onChange={handleChange}
+        className="w-full h-10 rounded-lg border border-gray-300 px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-500"
+      >
+        <option value="PKR">Rs (PKR)</option>
+        <option value="USD">$ (USD)</option>
+        <option value="EUR">€ (EUR)</option>
+        <option value="GBP">£ (GBP)</option>
+      </select>
+
+    </div>
+
+  </div>
+
+</div>
         {/* Description + Requirements */}
 
         <div className="grid grid-cols-2 gap-4">

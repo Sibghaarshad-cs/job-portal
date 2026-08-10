@@ -77,7 +77,7 @@ export async function GET() {
         requirements: body.requirements,
         salaryMin: Number(body.salaryMin),
         salaryMax: Number(body.salaryMax),
-
+        salaryCurrency: body.salaryCurrency,
         status: "Active",
       },
     });

@@ -50,6 +50,7 @@ export default async function JobSeekerDashboard() {
       category: app.job.category,
       salaryMin: app.job.salaryMin,
       salaryMax: app.job.salaryMax,
+        salaryCurrency: app.job.salaryCurrency,
     },
   }));
 

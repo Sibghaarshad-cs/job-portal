@@ -48,6 +48,7 @@ export default function FeaturedJobs() {
                 salaryMax={job.salaryMax}
                 category={job.category}
                 jobType={job.jobType}
+                salaryCurrency={job.salaryCurrency}
                 postedDate={new Date(job.postedAt).toLocaleDateString()}
                 href={applyHref}
               />

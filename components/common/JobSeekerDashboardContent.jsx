@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 import { 
   BriefcaseBusiness, 
   MapPin, 
@@ -16,7 +17,92 @@ import {
 export default function JobSeekerDashboardContent({ applications = [] }) {
   const [filter, setFilter] = useState("ALL");
   const [searchTerm, setSearchTerm] = useState("");
+const [displayCurrencies, setDisplayCurrencies] = useState({});
+const [exchangeRates, setExchangeRates] = useState({});
+const [loadingRates, setLoadingRates] = useState({});
 
+useEffect(() => {
+async function getExchangeRates() {
+const currencies = [
+...new Set(
+applications
+.map((app) => app.job.salaryCurrency)
+.filter(Boolean)
+),
+];
+
+for (const currency of currencies) {
+  if (exchangeRates[currency]) {
+    continue;
+  }
+
+  try {
+    const response = await fetch(
+      `https://open.er-api.com/v6/latest/${currency}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to get exchange rates");
+    }
+
+    const data = await response.json();
+
+    setExchangeRates((previous) => ({
+      ...previous,
+      [currency]: data.rates,
+    }));
+  } catch (error) {
+    console.error(
+      `Currency conversion error for ${currency}:`,
+      error
+    );
+  }
+}
+
+}
+
+if (applications.length > 0) {
+getExchangeRates();
+}
+}, [applications]);
+
+function getCurrencySymbol(currency) {
+if (currency === "PKR") return "Rs ";
+if (currency === "USD") return "$";
+if (currency === "EUR") return "€";
+if (currency === "GBP") return "£";
+
+return currency + " ";
+}
+
+function getDisplayedSalary(app) {
+const originalCurrency = app.job.salaryCurrency || "PKR";
+
+const displayCurrency =
+displayCurrencies[app.id] || originalCurrency;
+
+let min = Number(app.job.salaryMin);
+let max = Number(app.job.salaryMax);
+
+if (
+displayCurrency !== originalCurrency &&
+exchangeRates[originalCurrency] &&
+exchangeRates[originalCurrency][displayCurrency]
+) {
+const rate =
+exchangeRates[originalCurrency][displayCurrency];
+
+min = min * rate;
+max = max * rate;
+
+}
+
+return {
+currency: displayCurrency,
+min,
+max,
+};
+}
   // Counts
   const counts = {
     ALL: applications.length,
@@ -194,12 +280,53 @@ export default function JobSeekerDashboardContent({ applications = [] }) {
                   </div>
                 </div>
 
-                <div className="text-right">
-                  <span className="text-gray-400 text-[10px] uppercase font-semibold block">Salary Range</span>
-                  <span className="text-base font-bold text-violet-600 block mt-0.5">
-                    {app.job.salaryMin.toLocaleString()} - {app.job.salaryMax.toLocaleString()} PKR
-                  </span>
-                </div>
+                <div className="text-right"> {(() => { const salary = getDisplayedSalary(app);
+
+return (
+  <>
+    <span className="text-gray-400 text-[10px] uppercase font-semibold block">
+      Salary Range
+    </span>
+
+    <span className="text-base font-bold text-violet-600 block mt-0.5">
+      {getCurrencySymbol(salary.currency)}
+      {salary.min.toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+      })}
+      {" - "}
+      {getCurrencySymbol(salary.currency)}
+      {salary.max.toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+      })}
+    </span>
+
+    <div className="mt-2 flex items-center justify-end gap-2">
+      <span className="text-xs text-gray-500">
+        View in:
+      </span>
+
+      <select
+        value={salary.currency}
+        onChange={(e) =>
+          setDisplayCurrencies((previous) => ({
+            ...previous,
+            [app.id]: e.target.value,
+          }))
+        }
+        className="text-xs border border-gray-300 rounded-md px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-violet-500"
+      >
+        <option value="PKR">PKR</option>
+        <option value="USD">USD</option>
+        <option value="EUR">EUR</option>
+        <option value="GBP">GBP</option>
+      </select>
+    </div>
+  </>
+);
+
+})()}
+
+</div>
               </div>
             </div>
           ))}
