@@ -306,20 +306,33 @@ return (
       </span>
 
       <select
-        value={salary.currency}
-        onChange={(e) =>
-          setDisplayCurrencies((previous) => ({
-            ...previous,
-            [app.id]: e.target.value,
-          }))
-        }
-        className="text-xs border border-gray-300 rounded-md px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-violet-500"
-      >
-        <option value="PKR">PKR</option>
-        <option value="USD">USD</option>
-        <option value="EUR">EUR</option>
-        <option value="GBP">GBP</option>
-      </select>
+value={salary.currency}
+onChange={(e) =>
+setDisplayCurrencies((previous) => ({
+...previous,
+[app.id]: e.target.value,
+}))
+}
+className="text-xs border border-gray-300 rounded-md px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-violet-500"
+
+>
+
+  <option value={originalCurrency}>
+    {originalCurrency}
+  </option>
+
+{originalCurrency !== "PKR" && ( <option value="PKR">PKR</option>
+)}
+
+{originalCurrency !== "USD" && ( <option value="USD">USD</option>
+)}
+
+{originalCurrency !== "EUR" && ( <option value="EUR">EUR</option>
+)}
+
+{originalCurrency !== "GBP" && ( <option value="GBP">GBP</option>
+)} </select>
+
     </div>
   </>
 );
