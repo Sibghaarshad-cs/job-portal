@@ -145,7 +145,12 @@ try {
       String(searchData.salaryMax)
     );
   }
-
+if (searchData.salaryCurrency) {
+  params.set(
+    "salaryCurrency",
+    searchData.salaryCurrency
+  );
+}
   const queryString = params.toString();
 
   console.log(
