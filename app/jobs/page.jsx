@@ -2,7 +2,7 @@ import Sidebar from "../../components/candidate/Sidebar";
 import TopNavbar from "../../components/candidate/TopNavbar";
 import SearchBar from "../../components/common/SearchBar";
 import JobList from "../../components/common/JobList";
-
+import JobChatbot from "../../components/JobChatbot";
 export default function JobsPage() {
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -29,7 +29,7 @@ export default function JobsPage() {
         </div>
 
       </main>
-
+<JobChatbot />
     </div>
   );
 }
