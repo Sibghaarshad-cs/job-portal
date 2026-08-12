@@ -1,1 +1,140 @@
-import { NextResponse } from "next/server"; import Groq from "groq-sdk"; const groq = new Groq({ apiKey: process.env.GROQ_API_KEY, }); export async function POST(request) { try { const { message } = await request.json(); if (!message || typeof message !== "string" || !message.trim()) { return NextResponse.json({ error: "Please enter a job search.", }, { status: 400 }); } const completion = await groq.chat.completions.create({ model: "llama-3.3-70b-versatile", temperature: 0, messages: [{ role: "system", content: ` You are a job-search parser for a job portal. Your ONLY job is to understand the user's message and extract job-search filters. Return ONLY valid JSON. Do not return markdown. Do not return explanations. Do not invent information. Use EXACTLY this structure: { "isJobSearch": true, "title": null, "location": null, "companyName": null, "category": null, "jobType": null, "salaryMin": null, "salaryMax": null, "salaryCurrency": null } RULES: 1. TITLE Extract the job title when the user mentions one. Examples: "show me customer service jobs" => title = "customer service" "find software engineer jobs" => title = "software engineer" "frontend developer jobs" => title = "frontend developer" 2. LOCATION Extract the job location. Examples: "jobs in Islamabad" => location = "Islamabad" "find jobs in Lahore" => location = "Lahore" "software jobs near Rawalpindi" => location = "Rawalpindi" IMPORTANT: Use the job's actual location field. Do NOT use companyLocation. 3. COMPANY NAME Extract the company name. Examples: "jobs at Microsoft" => companyName = "Microsoft" "show me jobs at ABC Technologies" => companyName = "ABC Technologies" 4. CATEGORY Extract the job category. Examples: "show me IT jobs" => category = "IT" "marketing jobs" => category = "marketing" "finance jobs" => category = "finance" 5. JOB TYPE Extract the job type. Examples: "full time jobs" => jobType = "Full Time" "part time jobs" => jobType = "Part Time" "remote jobs" => jobType = "Remote" "contract jobs" => jobType = "Contract" 6. MINIMUM SALARY Use salaryMin when the user asks for a minimum salary. Examples: "jobs above 50000" => salaryMin = 50000 "jobs over 50000" => salaryMin = 50000 "jobs more than 50000" => salaryMin = 50000 "jobs paying more than 50000" => salaryMin = 50000 "jobs at least 50000" => salaryMin = 50000 "minimum salary 50000" => salaryMin = 50000 "jobs above 100k" => salaryMin = 100000 "jobs above 1 lakh" => salaryMin = 100000 7. MAXIMUM SALARY Use salaryMax when the user asks for a maximum salary. Examples: "jobs below 100000" => salaryMax = 100000 "jobs under 100000" => salaryMax = 100000 "jobs less than 100000" => salaryMax = 100000 "jobs paying less than 100000" => salaryMax = 100000 "jobs at most 100000" => salaryMax = 100000 "maximum salary 100000" => salaryMax = 100000 "jobs below 100k" => salaryMax = 100000 "jobs below 1 lakh" => salaryMax = 100000 8. SALARY NUMBER CONVERSION "k" or "K" means thousand. 50k = 50000 80k = 80000 100k = 100000 200k = 200000 500k = 500000 1000k = 1000000 "thousand" means thousand. 50 thousand = 50000 100 thousand = 100000 "lakh", "lac", or "lacs" means 100000. 1 lakh = 100000 1 lac = 100000 2 lakh = 200000 2 lac = 200000 2.5 lakh = 250000 Salary values MUST be numbers. Do NOT return salary values as strings. 9. SALARY RANGES When the user gives both minimum and maximum salary, extract both. Examples: "jobs between 50000 and 100000" => salaryMin = 50000 => salaryMax = 100000 "jobs from 80000 to 120000" => salaryMin = 80000 => salaryMax = 120000 "jobs paying 80k to 120k" => salaryMin = 80000 => salaryMax = 120000 "jobs between 1 lakh and 2 lakh" => salaryMin = 100000 => salaryMax = 200000 10. SALARY CURRENCY Extract salaryCurrency ONLY when the user explicitly mentions a currency. Supported currencies: PKR USD EUR GBP Examples: "jobs above 100k PKR" => salaryMin = 100000 => salaryCurrency = "PKR" "jobs above 100k USD" => salaryMin = 100000 => salaryCurrency = "USD" "jobs above 100k EUR" => salaryMin = 100000 => salaryCurrency = "EUR" "jobs above 100k GBP" => salaryMin = 100000 => salaryCurrency = "GBP" "jobs between 80k and 120k USD" => salaryMin = 80000 => salaryMax = 120000 => salaryCurrency = "USD" Currency symbols must also be understood. "Rs 100k" "100k PKR" "100k rupees" => salaryCurrency = "PKR" "$100k" "100k USD" "100k dollars" => salaryCurrency = "USD" "€100k" "100k EUR" "100k euros" => salaryCurrency = "EUR" "£100k" "100k GBP" "100k pounds" => salaryCurrency = "GBP" VERY IMPORTANT: If the user does NOT mention a currency, salaryCurrency MUST be null. Example: "jobs above 100k" must return: { "salaryMin": 100000, "salaryMax": null, "salaryCurrency": null } DO NOT automatically assume PKR. DO NOT automatically assume USD. DO NOT guess the currency. 11. COMBINATIONS Example: "I want a job in Karachi paying more than 100k" return: { "isJobSearch": true, "title": null, "location": "Karachi", "companyName": null, "category": null, "jobType": null, "salaryMin": 100000, "salaryMax": null, "salaryCurrency": null } Example: "I want a job in Karachi paying more than 100k PKR" return: { "isJobSearch": true, "title": null, "location": "Karachi", "companyName": null, "category": null, "jobType": null, "salaryMin": 100000, "salaryMax": null, "salaryCurrency": "PKR" } Example: "I want a job in Karachi paying more than 100k USD" return: { "isJobSearch": true, "title": null, "location": "Karachi", "companyName": null, "category": null, "jobType": null, "salaryMin": 100000, "salaryMax": null, "salaryCurrency": "USD" } Example: "Find part time jobs in Karachi above 100k USD" return: { "isJobSearch": true, "title": null, "location": "Karachi", "companyName": null, "category": null, "jobType": "Part Time", "salaryMin": 100000, "salaryMax": null, "salaryCurrency": "USD" } Example: "Find finance jobs in Islamabad under 80k PKR" return: { "isJobSearch": true, "title": null, "location": "Islamabad", "companyName": null, "category": "finance", "jobType": null, "salaryMin": null, "salaryMax": 80000, "salaryCurrency": "PKR" } Example: "Find software engineer jobs in Lahore between 80k and 150k USD" return: { "isJobSearch": true, "title": "software engineer", "location": "Lahore", "companyName": null, "category": null, "jobType": null, "salaryMin": 80000, "salaryMax": 150000, "salaryCurrency": "USD" } 12. ONLY EXTRACT WHAT USER MENTIONED Only extract information that the user actually mentioned. Do NOT guess. Do NOT invent a company. Do NOT invent a location. Do NOT invent a salary. Do NOT invent a job type. Do NOT invent a currency. 13. SHOW ALL JOBS If the user says: "show me jobs" return: { "isJobSearch": true, "title": null, "location": null, "companyName": null, "category": null, "jobType": null, "salaryMin": null, "salaryMax": null, "salaryCurrency": null } 14. UNRELATED QUESTIONS If the user asks something unrelated to finding jobs, set isJobSearch to false. Example: "what is the capital of Pakistan?" return: { "isJobSearch": false, "title": null, "location": null, "companyName": null, "category": null, "jobType": null, "salaryMin": null, "salaryMax": null, "salaryCurrency": null } Example: "write me a poem" return: { "isJobSearch": false, "title": null, "location": null, "companyName": null, "category": null, "jobType": null, "salaryMin": null, "salaryMax": null, "salaryCurrency": null } FINAL REQUIREMENT: Return JSON ONLY. `, }, { role: "user", content: message.trim(), },], }); const rawResponse = completion.choices?.[0]?.message?.content?.trim(); console.log("GROQ RAW RESPONSE:", rawResponse); if (!rawResponse) { throw new Error("Groq returned an empty response."); } const cleanedResponse = rawResponse.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim(); let parsedResponse; try { parsedResponse = JSON.parse(cleanedResponse); } catch (parseError) { console.error("INVALID GROQ JSON:", cleanedResponse); throw new Error("Groq returned invalid JSON."); } const response = { isJobSearch: parsedResponse.isJobSearch === true, title: typeof parsedResponse.title === "string" ? parsedResponse.title.trim() || null : null, location: typeof parsedResponse.location === "string" ? parsedResponse.location.trim() || null : null, companyName: typeof parsedResponse.companyName === "string" ? parsedResponse.companyName.trim() || null : null, category: typeof parsedResponse.category === "string" ? parsedResponse.category.trim() || null : null, jobType: typeof parsedResponse.jobType === "string" ? parsedResponse.jobType.trim() || null : null, salaryMin: typeof parsedResponse.salaryMin === "number" ? parsedResponse.salaryMin : null, salaryMax: typeof parsedResponse.salaryMax === "number" ? parsedResponse.salaryMax : null, salaryCurrency: typeof parsedResponse.salaryCurrency === "string" ? parsedResponse.salaryCurrency.trim().toUpperCase() || null : null, }; console.log("GROQ PARSED RESPONSE:", response); return NextResponse.json({ response, }); } catch (error) { console.error("CHATBOT ERROR:", error); return NextResponse.json({ error: "Could not understand the job search.", }, { status: 500 }); } }
+import { NextResponse } from "next/server";
+import Groq from "groq-sdk";
+
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+/* STEP 1: understand the user's message -> filters (accuracy matters, temp 0) */
+async function extractFilters(message) {
+  const completion = await groq.chat.completions.create({
+    model: "llama-3.3-70b-versatile",
+    temperature: 0,
+    messages: [
+      {
+        role: "system",
+        content: `You are a job-search filter extractor for a job portal.
+
+Return ONLY this JSON shape, nothing else:
+{
+  "isJobSearch": true,
+  "title": null,
+  "location": null,
+  "companyName": null,
+  "category": null,
+  "jobType": null,
+  "salaryMin": null,
+  "salaryMax": null,
+  "salaryCurrency": null
+}
+
+Rules:
+- Only fill fields the user actually mentioned. Never guess or invent a value.
+- location: use the job's own location, not the company's HQ.
+- jobType: one of "Full Time", "Part Time", "Remote", "Contract".
+- Salary numbers are numeric. "k"/"K" = thousand, "lakh"/"lac" = 100,000 (e.g. "100k" -> 100000, "2.5 lakh" -> 250000).
+- "above/over/more than/at least/minimum X" -> salaryMin = X.
+- "below/under/less than/at most/maximum X" -> salaryMax = X.
+- "between X and Y" / "X to Y" -> salaryMin = X, salaryMax = Y.
+- salaryCurrency: only PKR, USD, EUR, GBP. Recognize symbols/words: Rs/rupees->PKR, $/dollars->USD, €/euros->EUR, £/pounds->GBP.
+  If no currency is mentioned, salaryCurrency MUST be null — never assume PKR or USD.
+- If the message isn't about finding a job, return isJobSearch: false with every other field null.
+- Return JSON only. No markdown, no explanation.`,
+      },
+      { role: "user", content: message.trim() },
+    ],
+  });
+
+  const raw = completion.choices?.[0]?.message?.content?.trim();
+  if (!raw) throw new Error("Groq returned an empty response.");
+
+  const cleaned = raw
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/\s*```$/i, "")
+    .trim();
+
+  const parsed = JSON.parse(cleaned);
+
+  return {
+    isJobSearch: parsed.isJobSearch === true,
+    title: typeof parsed.title === "string" ? parsed.title.trim() || null : null,
+    location: typeof parsed.location === "string" ? parsed.location.trim() || null : null,
+    companyName: typeof parsed.companyName === "string" ? parsed.companyName.trim() || null : null,
+    category: typeof parsed.category === "string" ? parsed.category.trim() || null : null,
+    jobType: typeof parsed.jobType === "string" ? parsed.jobType.trim() || null : null,
+    salaryMin: typeof parsed.salaryMin === "number" ? parsed.salaryMin : null,
+    salaryMax: typeof parsed.salaryMax === "number" ? parsed.salaryMax : null,
+    salaryCurrency:
+      typeof parsed.salaryCurrency === "string"
+        ? parsed.salaryCurrency.trim().toUpperCase() || null
+        : null,
+  };
+}
+
+/* STEP 2: filters + result count -> natural reply (variety matters, temp 0.8) */
+async function generateReply(filters, jobCount) {
+  const completion = await groq.chat.completions.create({
+    model: "llama-3.3-70b-versatile",
+    temperature: 0.8,
+    messages: [
+      {
+        role: "system",
+       content: `You're a helpful assistant on a job portal's chat widget, replying to someone actively searching for jobs. Talk like a real person giving them a quick, natural update — not a form, not a bot script.
+
+You'll receive the filters that were used and how many jobs matched.
+
+RULES:
+- 1 sentence. Max 2 only if it genuinely needs it.
+- Never start with "I found" — vary your opening every single time. No two replies should ever open the same way.
+- Emojis are optional, never mandatory. Use one only if it genuinely fits the moment. Never force an emoji into a reply that doesn't need it.
+- Don't list every filter like a form ("Title: X. Location: Y."). Pick at most 1-2 details that matter and weave them into a normal sentence, or skip specifics entirely if the number alone says enough.
+- Zero results is a normal, valid outcome — not a failure. Never apologize or sound like you couldn't do something. Just state it plainly and suggest ONE concrete thing to try (a different title, a wider location, or dropping a filter).
+- Never offer or promise anything the app doesn't actually do — no notifications, no saved searches, no alerts, no "I'll let you know." Only ever suggest the user search again with different words.
+- Never invent details not present in the filters.
+- Never reuse the same sentence, structure, or phrase you've used before — every reply should read freshly written.
+
+Examples of the TONE to match (write your own wording each time, never copy these directly):
+"4 customer service roles just opened up in Islamabad."
+"Plenty here — 12 remote listings to scroll through."
+"Nothing above 100k PKR yet — try a lower range or a nearby city?"
+"Just one finance opening in Karachi right now."
+"6 live listings below, take a look."
+"No React roles this round — a broader title like 'developer' might turn up more."
+"Turned up 3 matches for part-time work in Lahore."
+"Empty for that combo — dropping the salary filter might help."`,
+      },
+      { role: "user", content: JSON.stringify({ filters, jobCount }) },
+    ],
+  });
+
+  return (
+    completion.choices?.[0]?.message?.content?.trim() ||
+    (jobCount > 0
+      ? `Found ${jobCount} matching job${jobCount === 1 ? "" : "s"}.`
+      : "No matching jobs found — try different filters.")
+  );
+}
+
+export async function POST(request) {
+  try {
+    const body = await request.json();
+
+    if (body.mode === "reply") {
+      const reply = await generateReply(body.filters || {}, Number(body.jobCount) || 0);
+      return NextResponse.json({ reply });
+    }
+
+    const { message } = body;
+
+    if (!message || typeof message !== "string" || !message.trim()) {
+      return NextResponse.json({ error: "Please enter a job search." }, { status: 400 });
+    }
+
+    const response = await extractFilters(message);
+    console.log("GROQ PARSED RESPONSE:", response);
+
+    return NextResponse.json({ response });
+  } catch (error) {
+    console.error("CHATBOT ERROR:", error);
+    return NextResponse.json({ error: "Could not understand the job search." }, { status: 500 });
+  }
+}
