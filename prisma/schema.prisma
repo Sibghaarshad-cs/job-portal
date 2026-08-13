@@ -47,6 +47,8 @@ model Application {
   status    String
   appliedAt DateTime @default(now())
   resume    String?
+  cvScore    Int?
+  cvAnalysis Json?
   job       Job      @relation(fields: [jobId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
   notes     Note[]

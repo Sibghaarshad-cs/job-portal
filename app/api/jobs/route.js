@@ -200,12 +200,7 @@ export async function GET(request) {
               mode: "insensitive",
             },
           },
-          {
-            companyLocation: {
-              contains: location,
-              mode: "insensitive",
-            },
-          },
+         
         ],
       });
     }

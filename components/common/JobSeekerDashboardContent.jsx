@@ -281,7 +281,7 @@ max,
                 </div>
 
                 <div className="text-right"> {(() => { const salary = getDisplayedSalary(app);
-
+ const originalCurrency = app.job.salaryCurrency || "PKR";
 return (
   <>
     <span className="text-gray-400 text-[10px] uppercase font-semibold block">
