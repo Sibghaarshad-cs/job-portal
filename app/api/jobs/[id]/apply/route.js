@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import fs from "fs";
 import path from "path";
 import { extractResumeText } from "../../../../../lib/extractResumeText";
-
+import { analyzeCV } from "../../../../../lib/analyzeCV";
 const prisma = new PrismaClient();
 
 async function saveFile(file, filename) {
@@ -53,6 +53,16 @@ if (resumeFile && resumeFile.size && resumeFile.name) {
   console.log("========== CV TEXT ==========");
   console.log(resumeText);
   console.log("=============================");
+  const cvAnalysis = await analyzeCV({
+  cvText: resumeText,
+  jobTitle: job.title,
+  jobDescription: job.description,
+  jobRequirements: job.requirements,
+});
+
+console.log("========== CV ANALYSIS ==========");
+console.log(cvAnalysis);
+console.log("=================================");
 }
       const application = await prisma.application.create({
         data: {
