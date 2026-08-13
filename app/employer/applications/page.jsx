@@ -172,6 +172,7 @@ function ApplicationsPageContent() {
                             </span>
                             Applied {formatAppliedDate(application.appliedAt)}
                           </p>
+                         
                         </div>
                       </div>
 
@@ -188,7 +189,15 @@ function ApplicationsPageContent() {
                           <span className="inline-flex items-center justify-center rounded-2xl border border-gray-200 bg-gray-100 px-5 py-3 text-sm font-semibold text-gray-500">
                             No Resume
                           </span>
+                          
                         )}
+                          {/* ADD CV SCORE HERE */}
+  <div className="inline-flex items-center justify-center rounded-2xl border border-violet-200 bg-violet-50 px-5 py-3">
+    <span className="text-sm font-semibold text-violet-700">
+      CV Score: {application.cvScore ?? "Not available"}%
+    </span>
+  </div>
+
                         <div className="relative inline-flex min-w-[150px] items-center rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
                           <span className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900">
                             <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />

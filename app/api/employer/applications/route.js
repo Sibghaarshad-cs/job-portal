@@ -32,6 +32,16 @@ export async function GET(request) {
         job: true,
       },
     });
+    console.log(
+  "APPLICATION CV SCORES:",
+  applications.map((application) => ({
+    id: application.id,
+    cvScore: application.cvScore,
+    cvAnalysis: application.cvAnalysis,
+  }))
+);
+
+return NextResponse.json(applications);
 
     return NextResponse.json(applications);
   } catch (error) {
