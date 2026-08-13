@@ -3,6 +3,7 @@ import { PrismaClient } from "../../../../generated/prisma/client";
 import { cookies } from "next/headers";
 import fs from "fs";
 import path from "path";
+import { extractResumeText } from "../../../../../lib/extractResumeText";
 
 const prisma = new PrismaClient();
 
@@ -41,11 +42,18 @@ export async function POST(request, context) {
       const contact = formData.get("contact")?.toString() || "";
 
       let resumePath = null;
-      const resumeFile = formData.get("resume");
-      if (resumeFile && resumeFile.size && resumeFile.name) {
-        resumePath = await saveFile(resumeFile, resumeFile.name);
-      }
 
+const resumeFile = formData.get("resume");
+
+if (resumeFile && resumeFile.size && resumeFile.name) {
+  resumePath = await saveFile(resumeFile, resumeFile.name);
+
+  const resumeText = await extractResumeText(resumePath);
+
+  console.log("========== CV TEXT ==========");
+  console.log(resumeText);
+  console.log("=============================");
+}
       const application = await prisma.application.create({
         data: {
           jobId: Number(id),
