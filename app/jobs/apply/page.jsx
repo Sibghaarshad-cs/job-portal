@@ -89,9 +89,16 @@ function ApplyPageContent() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setErrors({});
+  e.preventDefault();
+
+  // Resume is required
+  if (!resumeFile) {
+    setResumeError("Please upload your resume before submitting your application.");
+    return;
+  }
+
+  setSubmitting(true);
+  setErrors({});
 
     try {
       const fd = new FormData();
