@@ -112,6 +112,7 @@ export async function POST(request, context) {
           resume: resumePath,
           cvScore: cvScore,
           cvAnalysis: cvAnalysis,
+           contactNumber: contact,
         },
       });
 

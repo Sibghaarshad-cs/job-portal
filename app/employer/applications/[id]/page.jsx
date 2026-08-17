@@ -163,7 +163,7 @@ export default async function ApplicationDetailPage({ params }) {
                   </svg>
                 }
                 label="Phone"
-                value={application.user.contactNumber}
+                value={application.contactNumber}
                 iconClass="bg-[#ECFDF5] text-[#059669]"
               />
 
