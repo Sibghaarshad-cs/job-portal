@@ -7,200 +7,392 @@ import TopNavbar from "../../../../components/employer/TopNavbar";
 
 const prisma = new PrismaClient();
 
-const formatAppliedDate = (dateString) => {
-  const date = new Date(dateString);
-  const day = date.getDate();
-  const suffix = day % 10 === 1 && day !== 11 ? "st" : day % 10 === 2 && day !== 12 ? "nd" : day % 10 === 3 && day !== 13 ? "rd" : "th";
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-  const month = monthNames[date.getMonth()];
-  const year = date.getFullYear();
-  const hours = date.getHours().toString().padStart(2, "0");
-  const minutes = date.getMinutes().toString().padStart(2, "0");
-  return `${month} ${day}${suffix}, ${year} at ${hours}:${minutes} ${hours >= 12 ? "PM" : "AM"}`;
-};
-
-export default async function ApplicationDetailPage({ params, searchParams }) {
+export default async function ApplicationDetailPage({ params }) {
   const cookieStore = await cookies();
   const userId = cookieStore.get("userId")?.value;
-  const applicationId = Number(params?.id);
-  const showResumePreview = searchParams?.viewResume === "1";
 
+  const { id } = await params;
+  const applicationId = Number(id);
+
+  // Check login
   if (!userId) {
-    redirect("/login?next=/employer/applications");
+    redirect(
+      `/login?next=${encodeURIComponent(
+        `/employer/applications/${applicationId}`
+      )}`
+    );
   }
 
+  // Check valid application ID
   if (!Number.isInteger(applicationId) || applicationId <= 0) {
     redirect("/employer/applications");
   }
 
+  // Get application
   const application = await prisma.application.findUnique({
-    where: { id: applicationId },
+    where: {
+      id: applicationId,
+    },
     include: {
       user: true,
       job: true,
     },
   });
 
+  // Check application exists and belongs to employer
   if (!application || application.job.userId !== Number(userId)) {
     redirect("/employer/applications");
   }
 
-  const resumeFileName = application.resume?.split("/").pop() || "Resume.pdf";
-  const resumeUrl = application.resume
-    ? application.resume.startsWith("http")
-      ? application.resume
-      : application.resume.startsWith("/")
-        ? application.resume
-        : `/${application.resume}`
-    : "#";
-  const resumeExtension = resumeFileName.split(".").pop()?.toLowerCase() || "";
-  const canPreviewInBrowser = ["pdf", "png", "jpg", "jpeg", "gif", "webp"].includes(resumeExtension);
-  const previewHref = resumeUrl !== "#" ? resumeUrl : undefined;
+  const analysis = application.cvAnalysis || null;
 
   return (
-    <div className="flex min-h-screen bg-slate-100">
+    <div className="flex min-h-screen bg-[#F7F9FC]">
       <Sidebar />
-      <main className="flex-1">
+
+      <main className="min-w-0 flex-1">
         <TopNavbar />
-        <div className="p-8">
-          <div className="mb-8 rounded-[32px] bg-white p-8 shadow-sm">
-            <div className="mb-6 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+
+        <div className="px-6 pb-10 pt-8 md:px-10 lg:px-12">
+          {/* ================= PAGE HEADER ================= */}
+
+          <div className="mb-8">
+  {/* Header */}
+  <div className="mt-8">
+    <div className="flex items-center gap-4">
+      <h1 className="text-[32px] font-bold tracking-[-0.5px] text-[#172B4D]">
+        Application Details
+      </h1>
+
+      
+    </div>
+
+    <p className="mt-2 text-[15px] text-[#718096]">
+      Applicant information and CV evaluation
+    </p>
+  </div>
+</div>
+
+          {/* ================= PERSONAL INFORMATION ================= */}
+
+          <section className="mb-8 overflow-hidden rounded-[22px] bg-white shadow-[0_4px_20px_rgba(23,43,77,0.06)]">
+            {/* Card Header */}
+            <div className="border-b border-[#EDF2F7] px-7 py-6">
               <div className="flex items-center gap-4">
-                <Link
-                  href="/employer/applications"
-                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-                >
-                  ← Back to Applications
-                </Link>
+                {/* Header Icon */}
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E8F1FF] text-[#2563EB]">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    className="h-6 w-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4.5 20.25a7.5 7.5 0 0115 0"
+                    />
+                  </svg>
+                </div>
+
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">{application.job.title}</p>
-                  <h1 className="mt-2 text-3xl font-bold text-slate-900">{application.user.name}</h1>
-                  <p className="mt-2 text-sm text-slate-500">{application.user.email}</p>
+                  <h2 className="text-[20px] font-bold text-[#172B4D]">
+                    Personal Information
+                  </h2>
+
+                  <p className="mt-1 text-sm text-[#7B8794]">
+                    Applicant contact details
+                  </p>
                 </div>
-              </div>
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5">
-                <p className="text-sm uppercase tracking-[0.22em] text-slate-500">Applied on</p>
-                <p className="mt-2 text-base font-semibold text-slate-900">{formatAppliedDate(application.appliedAt)}</p>
               </div>
             </div>
-            <div className="grid gap-6 lg:grid-cols-2">
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
-                <div className="mb-4 flex items-center gap-3 text-slate-900">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-200 text-xl">👤</span>
-                  <div>
-                    <h2 className="text-base font-semibold">Personal Information</h2>
-                    <p className="text-sm text-slate-500">Name, email and contact.</p>
-                  </div>
-                </div>
-                <div className="space-y-4 text-sm text-slate-700">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Name</p>
-                    <p className="mt-2 font-semibold text-slate-900">{application.user.name}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Email</p>
-                    <p className="mt-2 font-semibold text-slate-900">{application.user.email}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Contact</p>
-                    <p className="mt-2 font-semibold text-slate-900">{application.user.contactNumber || "—"}</p>
-                  </div>
-                </div>
+
+            {/* Contact Information */}
+            <div className="grid gap-4 p-6 md:grid-cols-3">
+              {/* NAME */}
+              <ContactCard
+                icon={
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    className="h-5 w-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4.5 20.25a7.5 7.5 0 0115 0"
+                    />
+                  </svg>
+                }
+                label="Name"
+                value={application.user.name}
+                iconClass="bg-[#E8F1FF] text-[#2563EB]"
+              />
+
+              {/* PHONE */}
+              <ContactCard
+                icon={
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    className="h-5 w-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106a1.125 1.125 0 00-1.173.417l-.97 1.293a1.125 1.125 0 01-1.21.38 12.035 12.035 0 01-7.193-7.193 1.125 1.125 0 01.38-1.21l1.293-.97c.363-.272.529-.735.417-1.173L6.716 3.1A1.125 1.125 0 005.625 2.25H4.25A2.25 2.25 0 002 4.5v2.25z"
+                    />
+                  </svg>
+                }
+                label="Phone"
+                value={application.user.contactNumber}
+                iconClass="bg-[#ECFDF5] text-[#059669]"
+              />
+
+              {/* EMAIL */}
+              <ContactCard
+                icon={
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    className="h-5 w-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-.986 1.862l-7.5 5a2.25 2.25 0 01-2.528 0l-7.5-5A2.25 2.25 0 012.25 6.993V6.75"
+                    />
+                  </svg>
+                }
+                label="Email"
+                value={application.user.email}
+                iconClass="bg-[#F4EEFF] text-[#7C3AED]"
+              />
+            </div>
+          </section>
+
+          {/* ================= CV EVALUATION ================= */}
+
+          <section>
+            <div className="mb-5">
+              <h2 className="text-[21px] font-semibold text-[#172B4D]">
+                CV Evaluation
+              </h2>
+
+              <p className="mt-1 text-sm text-[#7B8794]">
+                How the applicant&apos;s CV matches this position
+              </p>
+            </div>
+
+            {!analysis ? (
+              <div className="rounded-[20px] bg-white p-10 text-center shadow-[0_2px_8px_rgba(15,23,42,0.04)]">
+                <p className="font-medium text-[#172B4D]">
+                  CV analysis not available
+                </p>
+
+                <p className="mt-1 text-sm text-[#7B8794]">
+                  This application does not have a CV analysis result yet.
+                </p>
               </div>
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
-                <div className="mb-4 flex items-center gap-3 text-slate-900">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-200 text-xl">📄</span>
-                  <div>
-                    <h2 className="text-base font-semibold">CV / Resume</h2>
-                    <p className="text-sm text-slate-500">Open the uploaded resume and return to the application list.</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between rounded-3xl bg-white p-4 shadow-sm">
-                  <div>
-                    <p className="font-semibold text-slate-900">{resumeFileName}</p>
-                    <p className="text-xs uppercase tracking-[0.24em] text-slate-500">PDF • {application.resume ? "uploaded" : "not uploaded"}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {application.resume ? (
-                      <a
-                        href={previewHref}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-                      >
-                        Download Resume
-                      </a>
-                    ) : (
-                      <span className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-500">
-                        No Resume
+            ) : (
+              <div className="space-y-4">
+                {/* EDUCATION */}
+
+                <EvaluationRow
+                  icon="🎓"
+                  title="Education Relevance"
+                  description="Education match with the position"
+                  text={
+                    analysis.educationRelevance?.text ||
+                    "No information available."
+                  }
+                  score={analysis.educationRelevance?.score}
+                  iconBg="bg-[#EEF4FF]"
+                  scoreBg="bg-[#EEF4FF]"
+                  scoreText="text-[#2563EB]"
+                />
+
+                {/* EXPERIENCE */}
+
+                <EvaluationRow
+                  icon="💼"
+                  title="Experience Relevance"
+                  description="Experience match with the position"
+                  text={
+                    analysis.experienceRelevance?.text ||
+                    "No information available."
+                  }
+                  score={analysis.experienceRelevance?.score}
+                  iconBg="bg-[#ECFDF5]"
+                  scoreBg="bg-[#ECFDF5]"
+                  scoreText="text-[#059669]"
+                />
+
+                {/* SKILLS */}
+
+                <EvaluationRow
+                  icon="⭐"
+                  title="Skills Alignment"
+                  description="Skills match with the position"
+                  text={
+                    analysis.skillsAlignment?.text ||
+                    "No information available."
+                  }
+                  score={analysis.skillsAlignment?.score}
+                  iconBg="bg-[#F4EEFF]"
+                  scoreBg="bg-[#F4EEFF]"
+                  scoreText="text-[#7C3AED]"
+                />
+
+                {/* KEYWORDS */}
+
+                <EvaluationRow
+                  icon="🔑"
+                  title="Keyword Match"
+                  description="Required keywords found in the CV"
+                  text={
+                    analysis.keywordMatch?.text ||
+                    "No information available."
+                  }
+                  score={analysis.keywordMatch?.score}
+                  iconBg="bg-[#FFF7E6]"
+                  scoreBg="bg-[#FFF7E6]"
+                  scoreText="text-[#D97706]"
+                />
+
+                {/* OVERALL SCORE */}
+
+                <div className="mt-5 rounded-[20px] bg-white px-7 py-6 shadow-[0_2px_8px_rgba(15,23,42,0.04)]">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold text-[#172B4D]">
+                        Overall CV Score
+                      </h3>
+
+                      <p className="mt-1 text-sm text-[#7B8794]">
+                        Overall match for this position
+                      </p>
+                    </div>
+
+                    <div className="flex h-[86px] w-[86px] items-center justify-center rounded-full bg-[#F1EAFF]">
+                      <span className="text-2xl font-semibold text-[#7C3AED]">
+                        {analysis.overallScore ??
+                          application.cvScore ??
+                          0}
+                        %
                       </span>
-                    )}
-                    {application.resume ? (
-                      <a
-                        href={resumeUrl}
-                        download={resumeFileName}
-                        className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700"
-                      >
-                        Download
-                      </a>
-                    ) : null}
+                    </div>
                   </div>
                 </div>
-                {showResumePreview && application.resume ? (
-                  <div className="mt-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <div className="mb-3 flex items-center justify-between">
-                      <div>
-                        <h3 className="text-base font-semibold text-slate-900">Resume Preview</h3>
-                        <p className="text-sm text-slate-500">The uploaded file will open in a new tab. Use the back link to return to the application details.</p>
-                      </div>
-                      <Link
-                        href={`/employer/applications/${application.id}`}
-                        className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-                      >
-                        ← Back
-                      </Link>
-                    </div>
-                    <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center">
-                      <p className="text-base font-semibold text-slate-900">Your browser should open the resume in a new tab.</p>
-                      <p className="mt-2 text-sm text-slate-500">If it does not, use the button below to download it directly.</p>
-                      <div className="mt-4 flex justify-center gap-3">
-                        <a
-                          href={resumeUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center justify-center rounded-2xl bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-700"
-                        >
-                          Open Resume
-                        </a>
-                        <a
-                          href={resumeUrl}
-                          download={resumeFileName}
-                          className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-                        >
-                          Download
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                ) : null}
               </div>
-            </div>
-          </div>
+            )}
+          </section>
         </div>
       </main>
+    </div>
+  );
+}
+
+/* =========================================================
+   CONTACT CARD
+========================================================= */
+
+function ContactCard({ icon, label, value, iconClass }) {
+  return (
+    <div className="rounded-[18px] border border-[#EDF2F7] bg-[#F8FAFD] px-5 py-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm">
+      <div
+        className={`mb-4 flex h-10 w-10 items-center justify-center rounded-xl ${iconClass}`}
+      >
+        {icon}
+      </div>
+
+      <p className="text-[11px] font-bold uppercase tracking-[1.2px] text-[#8492A6]">
+        {label}
+      </p>
+
+      <p className="mt-2 break-words text-[17px] font-semibold text-[#172B4D]">
+        {value || "Not provided"}
+      </p>
+    </div>
+  );
+}
+
+/* =========================================================
+   EVALUATION ROW
+========================================================= */
+
+function EvaluationRow({
+  icon,
+  title,
+  description,
+  text,
+  score,
+  iconBg,
+  scoreBg,
+  scoreText,
+}) {
+  return (
+    <div className="rounded-[20px] bg-white px-6 py-6 shadow-[0_2px_8px_rgba(15,23,42,0.04)]">
+      <div className="flex flex-col gap-5 md:flex-row md:items-center">
+        {/* LEFT */}
+
+        <div className="flex min-w-0 flex-1 items-start gap-4">
+          <div
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[13px] ${iconBg} text-lg`}
+          >
+            {icon}
+          </div>
+
+          <div className="min-w-0">
+            <h3 className="text-[16px] font-semibold text-[#172B4D]">
+              {title}
+            </h3>
+
+            <p className="mt-1 text-sm text-[#7B8794]">
+              {description}
+            </p>
+
+            <p className="mt-3 text-[14px] leading-6 text-[#52667A]">
+              {text}
+            </p>
+          </div>
+        </div>
+
+        {/* SCORE */}
+
+        <div
+          className={`flex h-[72px] w-[82px] shrink-0 flex-col items-center justify-center rounded-[16px] ${scoreBg}`}
+        >
+          <span className={`text-[21px] font-semibold ${scoreText}`}>
+            {score ?? 0}%
+          </span>
+
+          <span className={`mt-0.5 text-[11px] font-medium ${scoreText}`}>
+            Score
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
