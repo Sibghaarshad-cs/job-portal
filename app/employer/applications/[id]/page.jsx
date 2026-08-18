@@ -227,7 +227,11 @@ export default async function ApplicationDetailPage({ params }) {
                     analysis.educationRelevance?.text ||
                     "No information available."
                   }
-                  score={analysis.educationRelevance?.score}
+                 score={
+  ((analysis.educationRelevance?.score ?? 0) *
+    application.job.educationWeight) / 100
+}
+maxScore={application.job.educationWeight}
                   iconBg="bg-[#EEF4FF]"
                   scoreBg="bg-[#EEF4FF]"
                   scoreText="text-[#2563EB]"
@@ -243,7 +247,11 @@ export default async function ApplicationDetailPage({ params }) {
                     analysis.experienceRelevance?.text ||
                     "No information available."
                   }
-                  score={analysis.experienceRelevance?.score}
+                 score={
+  ((analysis.experienceRelevance?.score ?? 0) *
+    application.job.experienceWeight) / 100
+}
+maxScore={application.job.experienceWeight}
                   iconBg="bg-[#ECFDF5]"
                   scoreBg="bg-[#ECFDF5]"
                   scoreText="text-[#059669]"
@@ -259,7 +267,11 @@ export default async function ApplicationDetailPage({ params }) {
                     analysis.skillsAlignment?.text ||
                     "No information available."
                   }
-                  score={analysis.skillsAlignment?.score}
+                 score={
+  ((analysis.skillsAlignment?.score ?? 0) *
+    application.job.skillsWeight) / 100
+}
+maxScore={application.job.skillsWeight}
                   iconBg="bg-[#F4EEFF]"
                   scoreBg="bg-[#F4EEFF]"
                   scoreText="text-[#7C3AED]"
@@ -275,7 +287,11 @@ export default async function ApplicationDetailPage({ params }) {
                     analysis.keywordMatch?.text ||
                     "No information available."
                   }
-                  score={analysis.keywordMatch?.score}
+                 score={
+  ((analysis.keywordMatch?.score ?? 0) *
+    application.job.keywordWeight) / 100
+}
+maxScore={application.job.keywordWeight}
                   iconBg="bg-[#FFF7E6]"
                   scoreBg="bg-[#FFF7E6]"
                   scoreText="text-[#D97706]"
@@ -297,11 +313,8 @@ export default async function ApplicationDetailPage({ params }) {
 
                     <div className="flex h-[86px] w-[86px] items-center justify-center rounded-full bg-[#F1EAFF]">
                       <span className="text-2xl font-semibold text-[#7C3AED]">
-                        {analysis.overallScore ??
-                          application.cvScore ??
-                          0}
-                        %
-                      </span>
+  {application.cvScore ?? 0}%
+</span>
                     </div>
                   </div>
                 </div>
@@ -342,15 +355,16 @@ function ContactCard({ icon, label, value, iconClass }) {
    EVALUATION ROW
 ========================================================= */
 
-function EvaluationRow({
-  icon,
-  title,
-  description,
-  text,
+function EvaluationRow({ 
+  icon, 
+  title, 
+  description, 
+  text, 
   score,
-  iconBg,
-  scoreBg,
-  scoreText,
+  maxScore,
+  iconBg, 
+  scoreBg, 
+  scoreText, 
 }) {
   return (
     <div className="rounded-[20px] bg-white px-6 py-6 shadow-[0_2px_8px_rgba(15,23,42,0.04)]">
@@ -385,7 +399,7 @@ function EvaluationRow({
           className={`flex h-[72px] w-[82px] shrink-0 flex-col items-center justify-center rounded-[16px] ${scoreBg}`}
         >
           <span className={`text-[21px] font-semibold ${scoreText}`}>
-            {score ?? 0}%
+           {score ?? 0} / {maxScore ?? 100}
           </span>
 
           <span className={`mt-0.5 text-[11px] font-medium ${scoreText}`}>
