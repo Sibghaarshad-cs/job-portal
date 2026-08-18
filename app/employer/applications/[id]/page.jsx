@@ -399,7 +399,7 @@ function EvaluationRow({
           className={`flex h-[72px] w-[82px] shrink-0 flex-col items-center justify-center rounded-[16px] ${scoreBg}`}
         >
           <span className={`text-[21px] font-semibold ${scoreText}`}>
-           {score ?? 0} / {maxScore ?? 100}
+           {score ?? 0}%
           </span>
 
           <span className={`mt-0.5 text-[11px] font-medium ${scoreText}`}>
