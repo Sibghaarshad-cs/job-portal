@@ -41,7 +41,8 @@ export async function GET() {
       { status: 500 }
     );
   }
-}export async function POST(request) {
+}
+export async function POST(request) {
   try {
     // Read form data
     const body = await request.json();
@@ -62,6 +63,30 @@ export async function GET() {
       );
     }
 
+    // Convert weights to numbers
+    const keywordWeight = Number(body.keywordWeight);
+    const skillsWeight = Number(body.skillsWeight);
+    const experienceWeight = Number(body.experienceWeight);
+    const educationWeight = Number(body.educationWeight);
+
+    // Make sure the weights add up to exactly 100
+    const totalWeight =
+      keywordWeight +
+      skillsWeight +
+      experienceWeight +
+      educationWeight;
+
+    if (totalWeight !== 100) {
+      return NextResponse.json(
+        {
+          message: "CV evaluation weights must add up to exactly 100%.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
     // Save the job in the database
     const job = await prisma.job.create({
       data: {
@@ -75,9 +100,17 @@ export async function GET() {
         jobType: body.jobType,
         description: body.description,
         requirements: body.requirements,
+
         salaryMin: Number(body.salaryMin),
         salaryMax: Number(body.salaryMax),
         salaryCurrency: body.salaryCurrency,
+
+        // CV Evaluation Weights
+        keywordWeight: keywordWeight,
+        skillsWeight: skillsWeight,
+        experienceWeight: experienceWeight,
+        educationWeight: educationWeight,
+
         status: "Active",
       },
     });
