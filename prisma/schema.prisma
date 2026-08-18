@@ -33,6 +33,10 @@ model Job {
   salaryMin       Int
   salaryMax       Int
   salaryCurrency String @default("PKR")
+  keywordWeight     Int @default(25)
+skillsWeight      Int @default(25)
+experienceWeight  Int @default(25)
+educationWeight   Int @default(25)
   status          String
   postedAt        DateTime      @default(now())
   companyLocation String
